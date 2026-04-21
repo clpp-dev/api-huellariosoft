@@ -53,72 +53,78 @@ Postcondición:
 
 La cita queda registrada en el calendario.
 
-Caso de Uso 3: Registrar Consulta Clínica
-CU03 – Registrar Consulta Veterinaria
-Actor principal:
+## Caso de Uso 3: Registrar Consulta Clínica
 
-Veterinario
+### CU03 – Registrar Consulta Veterinaria
 
-Descripción:
+**Actor principal:**
+- Veterinario
+
+**Descripción:**
 
 Permite registrar la atención médica realizada a una mascota.
 
-Precondiciones:
-La mascota debe existir
-La cita debe estar activa o registrada
-Flujo principal:
-El veterinario accede a la historia clínica
-Busca la mascota
-Registra síntomas y hallazgos
-Añade diagnóstico
-Registra tratamiento y observaciones
-Guarda la consulta
-Postcondición:
+**Precondiciones:**
+- La mascota debe existir
+- La cita debe estar activa o registrada
 
-La historia clínica queda actualizada.
+**Flujo principal:**
+1. El veterinario accede a la historia clínica
+2. Busca la mascota
+3. Registra síntomas y hallazgos
+4. Añade diagnóstico
+5. Registra tratamiento y observaciones
+6. Guarda la consulta
 
-Caso de Uso 4: Generar Factura
-CU04 – Generar Factura
-Actor principal:
+**Postcondición:**
+- La historia clínica queda actualizada.
 
-Recepcionista
+## Caso de Uso 4: Generar Factura
 
-Descripción:
+### CU04 – Generar Factura
+
+**Actor principal:**
+- Recepcionista
+
+**Descripción:**
 
 Permite generar una factura por servicios prestados.
 
-Precondiciones:
-Debe existir una atención registrada
-Flujo principal:
-El recepcionista accede al módulo de facturación
-Selecciona la mascota y el propietario
-Selecciona los servicios prestados
-El sistema calcula subtotal e impuestos
-El recepcionista confirma la factura
-El sistema genera la factura
-Se imprime o exporta en PDF
-Postcondición:
+**Precondiciones:**
+- Debe existir una atención registrada
 
-La factura queda registrada con estado pendiente o pagada presencialmente.
+**Flujo principal:**
+1. El recepcionista accede al módulo de facturación
+2. Selecciona la mascota y el propietario
+3. Selecciona los servicios prestados
+4. El sistema calcula subtotal e impuestos
+5. El recepcionista confirma la factura
+6. El sistema genera la factura
+7. Se imprime o exporta en PDF
 
-Caso de Uso 5: Controlar Inventario
-CU05 – Gestionar Inventario
-Actor principal:
+**Postcondición:**
+- La factura queda registrada en el sistema con estado pendiente o pagada presencialmente.
 
-Administrador
+## Caso de Uso 5: Controlar Inventario
 
-Descripción:
+### CU05 – Gestionar Inventario
+
+**Actor principal:**
+- Administrador
+
+**Descripción:**
 
 Permite registrar y controlar medicamentos e insumos.
 
-Precondiciones:
-Usuario autenticado con permisos
-Flujo principal:
-El administrador accede al módulo de inventario
-Registra nuevo producto o actualiza uno existente
-Define cantidad, precio y stock mínimo
-Guarda cambios
-El sistema actualiza inventario
-Postcondición:
+**Precondiciones:**
+- Usuario autenticado con permisos
 
-El inventario queda actualizado correctamente.
+**Flujo principal:**
+1. El administrador accede al módulo de inventario
+2. Registra nuevo producto o actualiza uno existente
+3. Define cantidad, precio y stock mínimo
+4. Guarda cambios
+5. El sistema actualiza inventario
+
+**Postcondición:**
+- El inventario queda actualizado correctamente.

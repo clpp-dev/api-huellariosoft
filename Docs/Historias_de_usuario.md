@@ -1,95 +1,102 @@
-Historias de Usuario (HU)
+# Historias de Usuario (HU)
 
 Las historias de usuario describen funcionalidades desde la perspectiva del usuario.
 
-1. Gestión de usuarios
-HU01
-Como administrador
-Quiero registrar usuarios del sistema
-Para asignar permisos según su rol dentro de la veterinaria.
+## 1. Gestión de usuarios
 
-HU02
-Como usuario autorizado
-Quiero iniciar sesión con mis credenciales
-Para acceder de forma segura al sistema.
+### HU01
+**Como** administrador  
+**Quiero** registrar usuarios del sistema  
+**Para** asignar permisos según su rol dentro de la veterinaria.
 
-2. Gestión de propietarios y mascotas
-HU03
-Como recepcionista
-Quiero registrar propietarios
-Para asociarlos correctamente con sus mascotas.
+### HU02
+**Como** usuario autorizado  
+**Quiero** iniciar sesión con mis credenciales  
+**Para** acceder de forma segura al sistema.
 
-HU04
-Como recepcionista
-Quiero registrar mascotas con su información clínica básica
-Para mantener actualizado su expediente veterinario.
+## 2. Gestión de propietarios y mascotas
 
-HU05
-Como veterinario
-Quiero consultar rápidamente una mascota
-Para revisar su historial antes de la atención.
+### HU03
+**Como** recepcionista  
+**Quiero** registrar propietarios  
+**Para** asociarlos correctamente con sus mascotas.
 
-3. Gestión de citas
-HU06
-Como recepcionista
-Quiero agendar citas veterinarias
-Para organizar la atención diaria.
+### HU04
+**Como** recepcionista  
+**Quiero** registrar mascotas con su información clínica básica  
+**Para** mantener actualizado su expediente veterinario.
 
-HU07
-Como recepcionista
-Quiero reprogramar o cancelar citas
-Para mantener actualizado el calendario de atención.
+### HU05
+**Como** veterinario  
+**Quiero** consultar rápidamente una mascota  
+**Para** revisar su historial antes de la atención.
 
-HU08
-Como veterinario
-Quiero visualizar mis citas del día
-Para planificar mis consultas.
+## 3. Gestión de citas
 
-4. Historia clínica
-HU09
-Como veterinario
-Quiero registrar consultas, diagnósticos y tratamientos
-Para mantener la historia clínica actualizada.
+### HU06
+**Como** recepcionista  
+**Quiero** agendar citas veterinarias  
+**Para** organizar la atención diaria.
 
-HU10
-Como veterinario
-Quiero adjuntar resultados de exámenes e imágenes
-Para complementar el seguimiento clínico.
+### HU07
+**Como** recepcionista  
+**Quiero** reprogramar o cancelar citas  
+**Para** mantener actualizado el calendario de atención.
 
-HU11
-Como veterinario
-Quiero consultar el historial médico completo
-Para tomar mejores decisiones clínicas.
+### HU08
+**Como** veterinario  
+**Quiero** visualizar mis citas del día  
+**Para** planificar mis consultas.
 
-5. Inventario
-HU12
-Como administrador
-Quiero registrar medicamentos e insumos
-Para controlar el inventario de la clínica.
+## 4. Historia clínica
 
-HU13
-Como auxiliar
-Quiero recibir alertas de bajo stock
-Para evitar faltantes de productos importantes.
+### HU09
+**Como** veterinario  
+**Quiero** registrar consultas, diagnósticos y tratamientos  
+**Para** mantener la historia clínica actualizada.
 
-6. Facturación
-HU14
-Como recepcionista
-Quiero generar facturas por servicios prestados
-Para entregar el soporte de cobro al cliente.
+### HU10
+**Como** veterinario  
+**Quiero** adjuntar resultados de exámenes e imágenes  
+**Para** complementar el seguimiento clínico.
 
-HU15
-Como administrador
-Quiero consultar el historial de facturación
-Para llevar control administrativo.
+### HU11
+**Como** veterinario  
+**Quiero** consultar el historial médico completo  
+**Para** tomar mejores decisiones clínicas.
 
-HU16
-Como recepcionista
-Quiero marcar una factura como pagada presencialmente
-Para mantener actualizado el estado de la venta.
+## 5. Inventario
 
-7. Reportes
-HU17
-Como administrador
-Quiero generar reportes de ingresos, citas e inventario
-Para tomar decisiones de gestión.
+### HU12
+**Como** administrador  
+**Quiero** registrar medicamentos e insumos  
+**Para** controlar el inventario de la clínica.
+
+### HU13
+**Como** auxiliar  
+**Quiero** recibir alertas de bajo stock  
+**Para** evitar faltantes de productos importantes.
+
+## 6. Facturación
+
+### HU14
+**Como** recepcionista  
+**Quiero** generar facturas por servicios prestados  
+**Para** entregar el soporte de cobro al cliente.
+
+### HU15
+**Como** administrador  
+**Quiero** consultar el historial de facturación  
+**Para** llevar control administrativo.
+
+### HU16
+**Como** recepcionista  
+**Quiero** marcar una factura como pagada presencialmente  
+**Para** mantener actualizado el estado de la venta.
+
+## 7. Reportes
+
+### HU17
+**Como** administrador  
+**Quiero** generar reportes de ingresos, citas e inventario  
+**Para** tomar decisiones de gestión.
