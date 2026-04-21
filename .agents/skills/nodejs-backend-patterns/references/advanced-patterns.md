@@ -297,7 +297,7 @@ export class AuthService {
 
   private generateToken(payload: any): string {
     return jwt.sign(payload, process.env.JWT_SECRET!, {
-      expiresIn: "15m",
+      expiresIn: "6d",
     });
   }
 
