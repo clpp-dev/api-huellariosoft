@@ -14,7 +14,7 @@ const mascotaSchema = new Schema(
     especie: {
       type: String,
       required: [true, 'La especie es requerida'],
-      enum: ['perro', 'gato', 'ave', 'roedor', 'reptil', 'otro'],
+      enum: ['Canino', 'Felino', 'Ave', 'Roedor', 'Reptil', 'Otro'],
     },
     raza: {
       type: String,
@@ -24,7 +24,7 @@ const mascotaSchema = new Schema(
     sexo: {
       type: String,
       required: [true, 'El sexo es requerido'],
-      enum: ['macho', 'hembra'],
+      enum: ['Macho', 'Hembra'],
     },
     edad: {
       valor: {
@@ -33,7 +33,7 @@ const mascotaSchema = new Schema(
       },
       unidad: {
         type: String,
-        enum: ['meses', 'años'],
+        enum: ['dias', 'meses', 'años'],
         default: 'años',
       },
     },

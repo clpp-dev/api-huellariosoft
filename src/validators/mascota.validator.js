@@ -13,7 +13,7 @@ export const createMascotaValidation = [
   body('especie')
     .notEmpty()
     .withMessage('La especie es requerida')
-    .isIn(['perro', 'gato', 'ave', 'roedor', 'reptil', 'otro'])
+    .isIn(['Canino', 'Felino', 'Ave', 'Roedor', 'Reptil', 'Otro'])
     .withMessage('Especie inválida'),
   body('raza')
     .optional()
@@ -23,7 +23,7 @@ export const createMascotaValidation = [
   body('sexo')
     .notEmpty()
     .withMessage('El sexo es requerido')
-    .isIn(['macho', 'hembra'])
+    .isIn(['Macho', 'Hembra'])
     .withMessage('Sexo inválido'),
   body('edad.valor')
     .optional()
@@ -33,7 +33,7 @@ export const createMascotaValidation = [
     .withMessage('La edad no puede ser negativa'),
   body('edad.unidad')
     .optional()
-    .isIn(['meses', 'años'])
+    .isIn(['dias', 'meses', 'años'])
     .withMessage('Unidad de edad inválida'),
   body('peso')
     .optional()
@@ -74,7 +74,7 @@ export const updateMascotaValidation = [
     .trim(),
   body('especie')
     .optional()
-    .isIn(['perro', 'gato', 'ave', 'roedor', 'reptil', 'otro'])
+    .isIn(['Canino', 'Felino', 'Ave', 'Roedor', 'Reptil', 'Otro'])
     .withMessage('Especie inválida'),
   body('raza')
     .optional()
@@ -83,7 +83,7 @@ export const updateMascotaValidation = [
     .trim(),
   body('sexo')
     .optional()
-    .isIn(['macho', 'hembra'])
+    .isIn(['Macho', 'Hembra'])
     .withMessage('Sexo inválido'),
   body('edad.valor')
     .optional()
@@ -93,7 +93,7 @@ export const updateMascotaValidation = [
     .withMessage('La edad no puede ser negativa'),
   body('edad.unidad')
     .optional()
-    .isIn(['meses', 'años'])
+    .isIn(['dias', 'meses', 'años'])
     .withMessage('Unidad de edad inválida'),
   body('peso')
     .optional()
