@@ -19,6 +19,7 @@ class CitaController {
       mascota,
       propietario,
       estado,
+      q,
     } = req.query;
 
     const result = await citaService.getAll(parseInt(page), parseInt(limit), {
@@ -27,6 +28,7 @@ class CitaController {
       mascota,
       propietario,
       estado,
+      q,
     });
 
     paginatedResponse(

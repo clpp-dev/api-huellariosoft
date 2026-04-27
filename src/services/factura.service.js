@@ -274,7 +274,7 @@ class FacturaService {
     const query = {};
 
     if (fechaInicio && fechaFin) {
-      query.createdAt = {
+      query.fecha = {
         $gte: new Date(fechaInicio),
         $lte: new Date(fechaFin),
       };
@@ -331,7 +331,7 @@ class FacturaService {
     return {
       totalFacturas,
       facturasEstado,
-      ingresosTotales: ingresosTotales[0]?.total || 0,
+      totalFacturado: ingresosTotales[0]?.total || 0,
       ingresosPorMetodo,
     };
   }

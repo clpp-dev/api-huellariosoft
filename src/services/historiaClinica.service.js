@@ -1,5 +1,6 @@
 import { HistoriaClinica } from '../models/HistoriaClinica.js';
 import { Mascota } from '../models/Mascota.js';
+import { Propietario } from '../models/Propietario.js';
 import { User } from '../models/User.js';
 import { Cita } from '../models/Cita.js';
 import { NotFoundError, ValidationError } from '../utils/errors.js';
@@ -22,6 +23,44 @@ class HistoriaClinicaService {
     }
     if (filters.veterinario) {
       query.veterinario = filters.veterinario;
+    }
+
+    // Búsqueda por nombre de mascota o propietario
+    let mascotasIds = null;
+    if (filters.q) {
+      const searchRegex = new RegExp(filters.q, 'i');
+      
+      // Buscar propietarios que coincidan
+      const propietarios = await Propietario.find({
+        nombreCompleto: searchRegex
+      }).select('_id');
+      
+      const propietariosIds = propietarios.map(p => p._id);
+      
+      // Buscar mascotas por nombre o por propietario
+      const mascotas = await Mascota.find({
+        $or: [
+          { nombre: searchRegex },
+          { propietario: { $in: propietariosIds } }
+        ]
+      }).select('_id');
+      
+      mascotasIds = mascotas.map(m => m._id);
+      
+      if (mascotasIds.length > 0) {
+        query.mascota = { $in: mascotasIds };
+      } else {
+        // Si no hay mascotas que coincidan, retornar vacío
+        return {
+          historias: [],
+          pagination: {
+            total: 0,
+            page,
+            limit,
+            pages: 0,
+          },
+        };
+      }
     }
 
     const [historias, total] = await Promise.all([

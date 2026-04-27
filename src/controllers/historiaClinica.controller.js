@@ -11,12 +11,12 @@ class HistoriaClinicaController {
    * GET /api/historias-clinicas
    */
   getAll = asyncHandler(async (req, res) => {
-    const { page = 1, limit = 10, mascota, veterinario } = req.query;
+    const { page = 1, limit = 10, mascota, veterinario, q } = req.query;
 
     const result = await historiaClinicaService.getAll(
       parseInt(page),
       parseInt(limit),
-      { mascota, veterinario }
+      { mascota, veterinario, q }
     );
 
     paginatedResponse(

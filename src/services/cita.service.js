@@ -39,6 +39,46 @@ class CitaService {
       query.estado = filters.estado;
     }
 
+    // Búsqueda por nombre de mascota o propietario
+    if (filters.q) {
+      const searchRegex = new RegExp(filters.q, 'i');
+      
+      // Buscar propietarios que coincidan
+      const propietarios = await Propietario.find({
+        nombreCompleto: searchRegex
+      }).select('_id');
+      
+      const propietariosIds = propietarios.map(p => p._id);
+      
+      // Buscar mascotas por nombre o por propietario
+      const mascotas = await Mascota.find({
+        $or: [
+          { nombre: searchRegex },
+          { propietario: { $in: propietariosIds } }
+        ]
+      }).select('_id');
+      
+      const mascotasIds = mascotas.map(m => m._id);
+      
+      if (mascotasIds.length > 0 || propietariosIds.length > 0) {
+        query.$or = [
+          { mascota: { $in: mascotasIds } },
+          { propietario: { $in: propietariosIds } }
+        ];
+      } else {
+        // Si no hay coincidencias, retornar vacío
+        return {
+          citas: [],
+          pagination: {
+            total: 0,
+            page,
+            limit,
+            pages: 0,
+          },
+        };
+      }
+    }
+
     const [citas, total] = await Promise.all([
       Cita.find(query)
         .populate('mascota', 'nombre especie raza numeroHistoriaClinica')
