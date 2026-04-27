@@ -10,6 +10,11 @@ const facturaSchema = new Schema(
       unique: true,
       trim: true,
     },
+    fecha: {
+      type: Date,
+      default: Date.now,
+      required: true,
+    },
     propietario: {
       type: Schema.Types.ObjectId,
       ref: 'Propietario',
@@ -96,6 +101,11 @@ const facturaSchema = new Schema(
     },
     fechaPago: {
       type: Date,
+    },
+    motivoCancelacion: {
+      type: String,
+      trim: true,
+      maxlength: [500, 'El motivo de cancelación no puede exceder 500 caracteres'],
     },
     observaciones: {
       type: String,

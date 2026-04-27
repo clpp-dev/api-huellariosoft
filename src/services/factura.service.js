@@ -225,7 +225,7 @@ class FacturaService {
   /**
    * Anular factura
    */
-  async anular(id) {
+  async anular(id, motivo) {
     const factura = await Factura.findById(id);
 
     if (!factura) {
@@ -237,6 +237,9 @@ class FacturaService {
     }
 
     factura.estado = 'anulada';
+    if (motivo) {
+      factura.motivoCancelacion = motivo;
+    }
     await factura.save();
 
     return factura;

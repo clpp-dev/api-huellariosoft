@@ -108,7 +108,8 @@ class FacturaController {
    * PATCH /api/facturas/:id/anular
    */
   anular = asyncHandler(async (req, res) => {
-    const factura = await facturaService.anular(req.params.id);
+    const { motivo } = req.body;
+    const factura = await facturaService.anular(req.params.id, motivo);
 
     successResponse(res, factura, 'Factura anulada exitosamente', 200);
   });
