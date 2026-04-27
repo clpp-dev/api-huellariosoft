@@ -58,6 +58,11 @@ const facturaSchema = new Schema(
           required: true,
           min: 0,
         },
+        // Referencia al producto de inventario (si aplica)
+        producto: {
+          type: Schema.Types.ObjectId,
+          ref: 'Inventario',
+        },
       },
     ],
     subtotal: {

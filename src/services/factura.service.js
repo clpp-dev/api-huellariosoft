@@ -1,6 +1,7 @@
 import { Factura } from '../models/Factura.js';
 import { Mascota } from '../models/Mascota.js';
 import { Propietario } from '../models/Propietario.js';
+import { Inventario } from '../models/Inventario.js';
 import { NotFoundError, ValidationError } from '../utils/errors.js';
 
 /**
@@ -114,17 +115,44 @@ class FacturaService {
       throw new ValidationError('El propietario especificado no existe');
     }
 
+    // Verificar stock de productos de inventario
+    for (const servicio of facturaData.servicios) {
+      if (servicio.producto) {
+        const producto = await Inventario.findById(servicio.producto);
+        
+        if (!producto) {
+          throw new ValidationError(`El producto ${servicio.descripcion} no existe en el inventario`);
+        }
+
+        if (producto.cantidad < servicio.cantidad) {
+          throw new ValidationError(
+            `Stock insuficiente para ${producto.nombre}. Disponible: ${producto.cantidad}, Requerido: ${servicio.cantidad}`
+          );
+        }
+      }
+    }
+
     // Crear factura (los cálculos se hacen en el pre-save del modelo)
     const factura = await Factura.create({
       ...facturaData,
       creadaPor: creadaPorId,
     });
 
+    // Descontar productos del inventario
+    for (const servicio of facturaData.servicios) {
+      if (servicio.producto) {
+        await Inventario.findByIdAndUpdate(servicio.producto, {
+          $inc: { cantidad: -servicio.cantidad }
+        });
+      }
+    }
+
     // Poblar referencias
     await factura.populate([
       { path: 'propietario', select: 'nombreCompleto documento telefono' },
       { path: 'mascota', select: 'nombre especie' },
       { path: 'creadaPor', select: 'nombre' },
+      { path: 'servicios.producto', select: 'nombre unidadMedida' },
     ]);
 
     return factura;
