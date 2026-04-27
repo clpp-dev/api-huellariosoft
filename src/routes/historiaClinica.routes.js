@@ -42,22 +42,22 @@ router.get(
 /**
  * @route   POST /api/historias-clinicas
  * @desc    Crear nueva historia clínica
- * @access  Private (Veterinario)
+ * @access  Private (Veterinario, Administrador)
  */
 router.post(
   '/',
-  authorize('veterinario'),
+  authorize('veterinario', 'administrador'),
   historiaClinicaController.create
 );
 
 /**
  * @route   PUT /api/historias-clinicas/:id
  * @desc    Actualizar historia clínica
- * @access  Private (Veterinario)
+ * @access  Private (Veterinario, Administrador)
  */
 router.put(
   '/:id',
-  authorize('veterinario'),
+  authorize('veterinario', 'administrador'),
   idValidation,
   handleValidationErrors,
   historiaClinicaController.update
@@ -66,11 +66,11 @@ router.put(
 /**
  * @route   POST /api/historias-clinicas/:id/vacunas
  * @desc    Agregar vacuna
- * @access  Private (Veterinario)
+ * @access  Private (Veterinario, Administrador)
  */
 router.post(
   '/:id/vacunas',
-  authorize('veterinario'),
+  authorize('veterinario', 'administrador'),
   idValidation,
   handleValidationErrors,
   historiaClinicaController.addVacuna
@@ -79,11 +79,11 @@ router.post(
 /**
  * @route   POST /api/historias-clinicas/:id/cirugias
  * @desc    Agregar cirugía
- * @access  Private (Veterinario)
+ * @access  Private (Veterinario, Administrador)
  */
 router.post(
   '/:id/cirugias',
-  authorize('veterinario'),
+  authorize('veterinario', 'administrador'),
   idValidation,
   handleValidationErrors,
   historiaClinicaController.addCirugia
@@ -92,11 +92,11 @@ router.post(
 /**
  * @route   POST /api/historias-clinicas/:id/examenes
  * @desc    Agregar examen
- * @access  Private (Veterinario)
+ * @access  Private (Veterinario, Administrador)
  */
 router.post(
   '/:id/examenes',
-  authorize('veterinario'),
+  authorize('veterinario', 'administrador'),
   idValidation,
   handleValidationErrors,
   historiaClinicaController.addExamen
@@ -105,11 +105,11 @@ router.post(
 /**
  * @route   POST /api/historias-clinicas/:id/archivos
  * @desc    Agregar archivo adjunto
- * @access  Private (Veterinario)
+ * @access  Private (Veterinario, Administrador)
  */
 router.post(
   '/:id/archivos',
-  authorize('veterinario'),
+  authorize('veterinario', 'administrador'),
   idValidation,
   handleValidationErrors,
   historiaClinicaController.addArchivo

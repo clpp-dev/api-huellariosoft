@@ -84,10 +84,14 @@ class HistoriaClinicaService {
       throw new ValidationError('La mascota especificada no existe');
     }
 
-    // Verificar que el veterinario existe
+    // Verificar que el veterinario existe y es válido
     const veterinario = await User.findById(veterinarioId);
-    if (!veterinario || veterinario.rol !== 'veterinario') {
-      throw new ValidationError('El veterinario no es válido');
+    if (!veterinario) {
+      throw new ValidationError('El veterinario especificado no existe');
+    }
+    
+    if (!['veterinario', 'administrador'].includes(veterinario.rol)) {
+      throw new ValidationError('El usuario especificado debe ser veterinario o administrador');
     }
 
     // Si hay una cita asociada, marcarla como completada

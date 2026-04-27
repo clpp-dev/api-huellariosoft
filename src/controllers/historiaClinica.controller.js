@@ -64,9 +64,13 @@ class HistoriaClinicaController {
    * POST /api/historias-clinicas
    */
   create = asyncHandler(async (req, res) => {
+    // Si se especifica un veterinario en el body, usarlo
+    // Si no, usar el usuario actual (debe ser veterinario o administrador)
+    const veterinarioId = req.body.veterinario || req.user._id;
+    
     const historia = await historiaClinicaService.create(
       req.body,
-      req.user._id
+      veterinarioId
     );
 
     successResponse(res, historia, 'Historia clínica creada exitosamente', 201);

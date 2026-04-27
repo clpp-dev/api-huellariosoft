@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { config } from '../config/config.js';
-import { UnauthorizedError } from '../utils/errors.js';
+import { UnauthorizedError, ForbiddenError } from '../utils/errors.js';
 import { User } from '../models/User.js';
 
 /**
@@ -58,8 +58,8 @@ export const authorize = (...roles) => {
 
     if (!roles.includes(req.user.rol)) {
       return next(
-        new UnauthorizedError(
-          `El rol '${req.user.rol}' no tiene permisos para esta acción`
+        new ForbiddenError(
+          `El rol '${req.user.rol}' no tiene permisos para esta acción. Se requiere: ${roles.join(', ')}`
         )
       );
     }
