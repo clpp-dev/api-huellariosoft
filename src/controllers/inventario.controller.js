@@ -11,12 +11,12 @@ class InventarioController {
    * GET /api/inventario
    */
   getAll = asyncHandler(async (req, res) => {
-    const { page = 1, limit = 10, categoria, stockBajo, search } = req.query;
+    const { page = 1, limit = 10, categoria, stockBajo, q } = req.query;
 
     const result = await inventarioService.getAll(
       parseInt(page),
       parseInt(limit),
-      { categoria, stockBajo, search }
+      { categoria, stockBajo, search: q }
     );
 
     paginatedResponse(
