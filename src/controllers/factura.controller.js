@@ -1,6 +1,7 @@
 import facturaService from '../services/factura.service.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { successResponse, paginatedResponse } from '../utils/responses.js';
+import { generateInvoicePDF } from '../utils/pdfGenerator.js';
 
 /**
  * Controller de facturas
@@ -141,6 +142,24 @@ class FacturaController {
       'Estadísticas obtenidas exitosamente',
       200
     );
+  });
+
+  /**
+   * Generar PDF de factura
+   * GET /api/facturas/:id/pdf
+   */
+  generatePDF = asyncHandler(async (req, res) => {
+    const factura = await facturaService.getById(req.params.id);
+
+    // Configurar headers para PDF
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename=factura-${factura.numeroFactura}.pdf`
+    );
+
+    // Generar PDF
+    await generateInvoicePDF(factura, res);
   });
 }
 

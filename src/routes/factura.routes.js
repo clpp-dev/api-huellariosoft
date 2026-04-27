@@ -46,6 +46,13 @@ router.get('/numero/:numeroFactura', facturaController.getByNumero);
 router.get('/propietario/:propietarioId', facturaController.getByPropietario);
 
 /**
+ * @route   GET /api/facturas/:id/pdf
+ * @desc    Generar PDF de factura
+ * @access  Private
+ */
+router.get('/:id/pdf', facturaController.generatePDF);
+
+/**
  * @route   GET /api/facturas/:id
  * @desc    Obtener factura por ID
  * @access  Private
