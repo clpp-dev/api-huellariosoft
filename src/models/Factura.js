@@ -80,6 +80,12 @@ const facturaSchema = new Schema(
       default: 0,
       min: 0,
     },
+    porcentajeImpuestos: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 100,
+    },
     descuento: {
       type: Number,
       default: 0,
