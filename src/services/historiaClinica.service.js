@@ -26,7 +26,14 @@ class HistoriaClinicaService {
 
     const [historias, total] = await Promise.all([
       HistoriaClinica.find(query)
-        .populate('mascota', 'nombre especie numeroHistoriaClinica')
+        .populate({
+          path: 'mascota',
+          select: 'nombre especie raza numeroHistoriaClinica propietario',
+          populate: {
+            path: 'propietario',
+            select: 'nombreCompleto telefono email'
+          }
+        })
         .populate('veterinario', 'nombre')
         .populate('cita')
         .skip(skip)
@@ -51,7 +58,13 @@ class HistoriaClinicaService {
    */
   async getById(id) {
     const historia = await HistoriaClinica.findById(id)
-      .populate('mascota')
+      .populate({
+        path: 'mascota',
+        populate: {
+          path: 'propietario',
+          select: 'nombreCompleto telefono email documento'
+        }
+      })
       .populate('veterinario', 'nombre email')
       .populate('cita');
 
@@ -67,6 +80,13 @@ class HistoriaClinicaService {
    */
   async getByMascota(mascotaId) {
     const historias = await HistoriaClinica.find({ mascota: mascotaId })
+      .populate({
+        path: 'mascota',
+        populate: {
+          path: 'propietario',
+          select: 'nombreCompleto telefono email'
+        }
+      })
       .populate('veterinario', 'nombre')
       .populate('cita')
       .sort({ fechaConsulta: -1 });
@@ -107,9 +127,16 @@ class HistoriaClinicaService {
       veterinario: veterinarioId,
     });
 
-    // Poblar referencias
+    // Poblar referencias con populate anidado del propietario
     await historia.populate([
-      { path: 'mascota', select: 'nombre especie numeroHistoriaClinica' },
+      {
+        path: 'mascota',
+        select: 'nombre especie raza numeroHistoriaClinica propietario',
+        populate: {
+          path: 'propietario',
+          select: 'nombreCompleto telefono email'
+        }
+      },
       { path: 'veterinario', select: 'nombre' },
     ]);
 
@@ -124,7 +151,14 @@ class HistoriaClinicaService {
       new: true,
       runValidators: true,
     })
-      .populate('mascota', 'nombre especie numeroHistoriaClinica')
+      .populate({
+        path: 'mascota',
+        select: 'nombre especie raza numeroHistoriaClinica propietario',
+        populate: {
+          path: 'propietario',
+          select: 'nombreCompleto telefono email'
+        }
+      })
       .populate('veterinario', 'nombre');
 
     if (!historia) {
@@ -143,7 +177,14 @@ class HistoriaClinicaService {
       { $push: { vacunas: vacunaData } },
       { new: true }
     )
-      .populate('mascota', 'nombre especie')
+      .populate({
+        path: 'mascota',
+        select: 'nombre especie raza propietario',
+        populate: {
+          path: 'propietario',
+          select: 'nombreCompleto telefono email'
+        }
+      })
       .populate('veterinario', 'nombre');
 
     if (!historia) {
@@ -162,7 +203,14 @@ class HistoriaClinicaService {
       { $push: { cirugias: cirugiaData } },
       { new: true }
     )
-      .populate('mascota', 'nombre especie')
+      .populate({
+        path: 'mascota',
+        select: 'nombre especie raza propietario',
+        populate: {
+          path: 'propietario',
+          select: 'nombreCompleto telefono email'
+        }
+      })
       .populate('veterinario', 'nombre');
 
     if (!historia) {
@@ -181,7 +229,14 @@ class HistoriaClinicaService {
       { $push: { examenes: examenData } },
       { new: true }
     )
-      .populate('mascota', 'nombre especie')
+      .populate({
+        path: 'mascota',
+        select: 'nombre especie raza propietario',
+        populate: {
+          path: 'propietario',
+          select: 'nombreCompleto telefono email'
+        }
+      })
       .populate('veterinario', 'nombre');
 
     if (!historia) {
@@ -200,7 +255,14 @@ class HistoriaClinicaService {
       { $push: { archivosAdjuntos: archivoData } },
       { new: true }
     )
-      .populate('mascota', 'nombre especie')
+      .populate({
+        path: 'mascota',
+        select: 'nombre especie raza propietario',
+        populate: {
+          path: 'propietario',
+          select: 'nombreCompleto telefono email'
+        }
+      })
       .populate('veterinario', 'nombre');
 
     if (!historia) {
