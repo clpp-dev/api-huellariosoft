@@ -13,43 +13,65 @@ const darkColor = '#1F2937';
 const lightGray = '#F3F4F6';
 
 /**
+ * Formatea una fecha sin conversión de zona horaria
+ * @param {Date|string} fecha - Fecha a formatear
+ * @returns {string} - Fecha formateada en formato local
+ */
+const formatFechaLocal = (fecha) => {
+  // Si ya es un objeto Date con datos completos (createdAt, fecha de BD)
+  if (fecha instanceof Date) {
+    return fecha.toLocaleDateString('es-CO');
+  }
+  
+  // Si es un string en formato YYYY-MM-DD
+  if (typeof fecha === 'string' && fecha.includes('-')) {
+    const [year, mes, dia] = fecha.split('T')[0].split('-').map(Number);
+    const fechaObj = new Date(year, mes - 1, dia);
+    return fechaObj.toLocaleDateString('es-CO');
+  }
+  
+  // Por defecto, intentar convertir
+  return new Date(fecha).toLocaleDateString('es-CO');
+};
+
+/**
  * Genera el encabezado común para todos los reportes
  */
 const generateHeader = (doc, reportTitle, fechaInicio, fechaFin) => {
   // Logo
   const logoPath = join(__dirname, '../assets/logo.png');
   try {
-    doc.image(logoPath, 50, 45, { width: 100 });
+    doc.image(logoPath, 50, 50, { width: 60 });
   } catch (err) {
     console.log('Logo no encontrado, continuando sin logo');
   }
 
   // Información de la empresa
-  doc.fontSize(18)
+  doc.fontSize(16)
      .fillColor(primaryColor)
      .font('Helvetica-Bold')
-     .text('HuellarioSoft', 160, 50);
+     .text('HuellarioSoft', 120, 50);
   
   doc.fontSize(8)
      .fillColor(grayColor)
      .font('Helvetica')
-     .text('Sistema de Gestión Veterinaria', 160, 70)
-     .text('Cel: 3103811650 / 3042780151', 160, 82);
+     .text('Sistema de Gestión Veterinaria', 120, 68)
+     .text('Cel: 3103811650 / 3042780151', 120, 79);
 
   // Título del reporte
-  doc.fontSize(24)
+  doc.fontSize(22)
      .fillColor(secondaryColor)
      .font('Helvetica-Bold')
-     .text(reportTitle, 50, 120, { align: 'center' });
+     .text(reportTitle, 50, 110, { align: 'center' });
 
   // Rango de fechas
   doc.fontSize(10)
      .fillColor(darkColor)
      .font('Helvetica')
      .text(
-       `Período: ${new Date(fechaInicio).toLocaleDateString('es-CO')} - ${new Date(fechaFin).toLocaleDateString('es-CO')}`,
+       `Período: ${formatFechaLocal(fechaInicio)} - ${formatFechaLocal(fechaFin)}`,
        50,
-       155,
+       140,
        { align: 'center' }
      );
 
@@ -59,50 +81,57 @@ const generateHeader = (doc, reportTitle, fechaInicio, fechaFin) => {
      .text(
        `Generado el: ${new Date().toLocaleDateString('es-CO')} ${new Date().toLocaleTimeString('es-CO')}`,
        50,
-       170,
+       155,
        { align: 'center' }
      );
 
   // Línea separadora
-  doc.moveTo(50, 190)
-     .lineTo(562, 190)
+  doc.moveTo(50, 175)
+     .lineTo(562, 175)
      .strokeColor(lightGray)
      .lineWidth(2)
      .stroke();
 
-  return 210; // Retorna la posición Y donde continuar
+  return 195; // Retorna la posición Y donde continuar
 };
 
 /**
- * Genera el footer común para todos los reportes
+ * Genera el footer en la página actual sin crear páginas adicionales
  */
-const generateFooter = (doc) => {
-  const pageCount = doc.bufferedPageRange().count;
-  for (let i = 0; i < pageCount; i++) {
-    doc.switchToPage(i);
-    
-    doc.moveTo(50, 720)
-       .lineTo(562, 720)
-       .strokeColor(lightGray)
-       .lineWidth(1)
-       .stroke();
+const addPageFooter = (doc, pageNumber) => {
+  const pageHeight = doc.page.height;
+  const bottomMargin = doc.page.margins.bottom;
+  const footerY = pageHeight - bottomMargin - 42; // 42px antes del borde inferior
+  
+  // Guardar posición actual
+  const currentY = doc.y;
+  
+  // Línea separadora del footer
+  doc.moveTo(50, footerY)
+     .lineTo(562, footerY)
+     .strokeColor(lightGray)
+     .lineWidth(1)
+     .stroke();
 
-    doc.fontSize(7)
-       .fillColor(grayColor)
-       .font('Helvetica')
-       .text(
-         'HuellarioSoft - Sistema de Gestión Veterinaria',
-         50,
-         730,
-         { align: 'center', width: 512 }
-       )
-       .text(
-         `Página ${i + 1} de ${pageCount}`,
-         50,
-         742,
-         { align: 'center', width: 512 }
-       );
-  }
+  // Texto del footer
+  doc.fontSize(7)
+     .fillColor(grayColor)
+     .font('Helvetica')
+     .text(
+       'HuellarioSoft - Sistema de Gestión Veterinaria',
+       50,
+       footerY + 10,
+       { align: 'center', width: 512 }
+     )
+     .text(
+       `Página ${pageNumber}`,
+       50,
+       footerY + 22,
+       { align: 'center', width: 512 }
+     );
+  
+  // Restaurar posición Y para no afectar el flujo
+  doc.y = Math.max(currentY, doc.y);
 };
 
 /**
@@ -113,12 +142,12 @@ export const generateFacturacionReport = (data, stream) => {
     try {
       const doc = new PDFDocument({ 
         size: 'letter',
-        margin: 50,
-        bufferPages: true
+        margin: 50
       });
 
       doc.pipe(stream);
 
+      let pageNumber = 1;
       let yPosition = generateHeader(doc, 'REPORTE DE FACTURACIÓN', data.fechaInicio, data.fechaFin);
 
       // Resumen de estadísticas
@@ -199,7 +228,9 @@ export const generateFacturacionReport = (data, stream) => {
 
       data.facturas.forEach((factura) => {
         if (yPosition > 650) {
+          addPageFooter(doc, pageNumber);
           doc.addPage();
+          pageNumber++;
           yPosition = 50;
         }
 
@@ -216,7 +247,7 @@ export const generateFacturacionReport = (data, stream) => {
            .fillColor(darkColor)
            .font('Helvetica')
            .text(factura.numeroFactura || 'N/A', 60, yPosition, { width: 70 })
-           .text(new Date(factura.fecha).toLocaleDateString('es-CO'), 135, yPosition, { width: 65 })
+           .text(formatFechaLocal(factura.fecha), 135, yPosition, { width: 65 })
            .text(factura.propietario?.nombreCompleto || 'N/A', 205, yPosition, { width: 140, ellipsis: true })
            .text(estadoLabel, 350, yPosition, { width: 70 })
            .font('Helvetica-Bold')
@@ -225,7 +256,7 @@ export const generateFacturacionReport = (data, stream) => {
         yPosition += 22;
       });
 
-      generateFooter(doc);
+      addPageFooter(doc, pageNumber);
       doc.end();
 
       stream.on('finish', resolve);
@@ -245,12 +276,12 @@ export const generateCitasReport = (data, stream) => {
     try {
       const doc = new PDFDocument({ 
         size: 'letter',
-        margin: 50,
-        bufferPages: true
+        margin: 50
       });
 
       doc.pipe(stream);
 
+      let pageNumber = 1;
       let yPosition = generateHeader(doc, 'REPORTE DE CITAS', data.fechaInicio, data.fechaFin);
 
       // Resumen de estadísticas
@@ -343,7 +374,9 @@ export const generateCitasReport = (data, stream) => {
 
       data.citas.forEach((cita) => {
         if (yPosition > 650) {
+          addPageFooter(doc, pageNumber);
           doc.addPage();
+          pageNumber++;
           yPosition = 50;
         }
 
@@ -360,7 +393,7 @@ export const generateCitasReport = (data, stream) => {
         doc.fontSize(8)
            .fillColor(darkColor)
            .font('Helvetica')
-           .text(new Date(cita.fecha).toLocaleDateString('es-CO'), 60, yPosition, { width: 65 })
+           .text(formatFechaLocal(cita.fecha), 60, yPosition, { width: 65 })
            .text(cita.hora, 130, yPosition, { width: 45 })
            .text(cita.mascota?.nombre || 'N/A', 180, yPosition, { width: 90, ellipsis: true })
            .text(cita.propietario?.nombreCompleto || 'N/A', 275, yPosition, { width: 110, ellipsis: true })
@@ -370,7 +403,7 @@ export const generateCitasReport = (data, stream) => {
         yPosition += 22;
       });
 
-      generateFooter(doc);
+      addPageFooter(doc, pageNumber);
       doc.end();
 
       stream.on('finish', resolve);
@@ -390,12 +423,12 @@ export const generateMascotasReport = (data, stream) => {
     try {
       const doc = new PDFDocument({ 
         size: 'letter',
-        margin: 50,
-        bufferPages: true
+        margin: 50
       });
 
       doc.pipe(stream);
 
+      let pageNumber = 1;
       let yPosition = generateHeader(doc, 'REPORTE DE MASCOTAS REGISTRADAS', data.fechaInicio, data.fechaFin);
 
       // Resumen de estadísticas
@@ -474,7 +507,9 @@ export const generateMascotasReport = (data, stream) => {
 
       data.mascotas.forEach((mascota) => {
         if (yPosition > 650) {
+          addPageFooter(doc, pageNumber);
           doc.addPage();
+          pageNumber++;
           yPosition = 50;
         }
 
@@ -492,12 +527,12 @@ export const generateMascotasReport = (data, stream) => {
            .text(mascota.especie || 'N/A', 165, yPosition, { width: 60 })
            .text(mascota.raza || 'N/A', 230, yPosition, { width: 80, ellipsis: true })
            .text(mascota.propietario?.nombreCompleto || 'N/A', 315, yPosition, { width: 120, ellipsis: true })
-           .text(new Date(mascota.createdAt).toLocaleDateString('es-CO'), 440, yPosition, { width: 110, align: 'right' });
+           .text(formatFechaLocal(mascota.createdAt), 440, yPosition, { width: 110, align: 'right' });
 
         yPosition += 22;
       });
 
-      generateFooter(doc);
+      addPageFooter(doc, pageNumber);
       doc.end();
 
       stream.on('finish', resolve);
