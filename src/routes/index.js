@@ -7,6 +7,7 @@ import citaRoutes from './cita.routes.js';
 import historiaClinicaRoutes from './historiaClinica.routes.js';
 import inventarioRoutes from './inventario.routes.js';
 import facturaRoutes from './factura.routes.js';
+import reporteRoutes from './reporte.routes.js';
 
 const router = Router();
 
@@ -27,6 +28,7 @@ router.get('/', (req, res) => {
       historias_clinicas: '/api/historias-clinicas',
       inventario: '/api/inventario',
       facturas: '/api/facturas',
+      reportes: '/api/reportes',
     },
   });
 });
@@ -42,5 +44,6 @@ router.use('/citas', citaRoutes);
 router.use('/historias-clinicas', historiaClinicaRoutes);
 router.use('/inventario', inventarioRoutes);
 router.use('/facturas', facturaRoutes);
+router.use('/reportes', reporteRoutes);
 
 export default router;
