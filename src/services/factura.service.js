@@ -34,6 +34,22 @@ class FacturaService {
       };
     }
 
+    // Búsqueda por número de factura o nombre de propietario
+    if (filters.q) {
+      // Buscar propietarios que coincidan
+      const propietarios = await Propietario.find({
+        nombreCompleto: { $regex: filters.q, $options: 'i' },
+        activo: true
+      }).select('_id');
+      
+      const propietarioIds = propietarios.map(p => p._id);
+      
+      query.$or = [
+        { numeroFactura: { $regex: filters.q, $options: 'i' } },
+        { propietario: { $in: propietarioIds } }
+      ];
+    }
+
     const [facturas, total] = await Promise.all([
       Factura.find(query)
         .populate('propietario', 'nombreCompleto documento telefono')

@@ -9,16 +9,17 @@ class PropietarioService {
   /**
    * Obtener todos los propietarios con paginación y búsqueda
    */
-  async getAll(page = 1, limit = 10, search = '') {
+  async getAll(page = 1, limit = 10, q = '') {
     const skip = (page - 1) * limit;
 
     const query = { activo: true };
 
-    // Búsqueda por nombre o documento
-    if (search) {
+    // Búsqueda por nombre, documento o teléfono
+    if (q) {
       query.$or = [
-        { nombreCompleto: { $regex: search, $options: 'i' } },
-        { documento: { $regex: search, $options: 'i' } },
+        { nombreCompleto: { $regex: q, $options: 'i' } },
+        { documento: { $regex: q, $options: 'i' } },
+        { telefono: { $regex: q, $options: 'i' } },
       ];
     }
 

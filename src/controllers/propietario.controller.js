@@ -11,12 +11,12 @@ class PropietarioController {
    * GET /api/propietarios
    */
   getAll = asyncHandler(async (req, res) => {
-    const { page = 1, limit = 10, search = '' } = req.query;
+    const { page = 1, limit = 10, q = '' } = req.query;
 
     const result = await propietarioService.getAll(
       parseInt(page),
       parseInt(limit),
-      search
+      q
     );
 
     paginatedResponse(

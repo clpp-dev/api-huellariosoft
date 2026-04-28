@@ -20,6 +20,7 @@ class FacturaController {
       estado,
       fechaInicio,
       fechaFin,
+      q,
     } = req.query;
 
     const result = await facturaService.getAll(parseInt(page), parseInt(limit), {
@@ -28,6 +29,7 @@ class FacturaController {
       estado,
       fechaInicio,
       fechaFin,
+      q,
     });
 
     paginatedResponse(

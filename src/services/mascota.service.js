@@ -22,10 +22,21 @@ class MascotaService {
     if (filters.especie) {
       query.especie = filters.especie;
     }
+    
+    // Búsqueda por nombre de mascota o nombre de propietario
     if (filters.search) {
+      // Buscar propietarios que coincidan
+      const propietarios = await Propietario.find({
+        nombreCompleto: { $regex: filters.search, $options: 'i' },
+        activo: true
+      }).select('_id');
+      
+      const propietarioIds = propietarios.map(p => p._id);
+      
       query.$or = [
         { nombre: { $regex: filters.search, $options: 'i' } },
         { numeroHistoriaClinica: { $regex: filters.search, $options: 'i' } },
+        { propietario: { $in: propietarioIds } }
       ];
     }
 
