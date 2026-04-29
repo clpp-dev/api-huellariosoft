@@ -18,6 +18,27 @@ class HistoriaClinicaService {
 
     const query = {};
 
+    // Filtro por propietario (buscar sus mascotas)
+    if (filters.propietario) {
+      const mascotas = await Mascota.find({ propietario: filters.propietario }).select('_id');
+      const mascotasIds = mascotas.map(m => m._id);
+      
+      if (mascotasIds.length > 0) {
+        query.mascota = { $in: mascotasIds };
+      } else {
+        // Si el propietario no tiene mascotas, retornar vacío
+        return {
+          historias: [],
+          pagination: {
+            total: 0,
+            page,
+            limit,
+            pages: 0,
+          },
+        };
+      }
+    }
+
     if (filters.mascota) {
       query.mascota = filters.mascota;
     }

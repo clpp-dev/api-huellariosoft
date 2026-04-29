@@ -102,14 +102,30 @@ class PropietarioService {
       }
     }
 
-    const propietario = await Propietario.findByIdAndUpdate(id, updateData, {
-      new: true,
-      runValidators: true,
-    });
+    // Si se está actualizando el email, verificar que no esté en uso
+    if (updateData.email) {
+      const existingEmail = await Propietario.findOne({
+        email: updateData.email,
+        _id: { $ne: id },
+      });
+
+      if (existingEmail) {
+        throw new ConflictError('El email ya está en uso');
+      }
+    }
+
+    // Buscar propietario
+    const propietario = await Propietario.findById(id);
 
     if (!propietario) {
       throw new NotFoundError('Propietario no encontrado');
     }
+
+    // Actualizar campos
+    Object.assign(propietario, updateData);
+
+    // Guardar (esto activará el hook pre-save para hashear password si cambió)
+    await propietario.save();
 
     return propietario;
   }

@@ -11,12 +11,18 @@ class HistoriaClinicaController {
    * GET /api/historias-clinicas
    */
   getAll = asyncHandler(async (req, res) => {
-    const { page = 1, limit = 10, mascota, veterinario, q } = req.query;
+    const { page = 1, limit = 10, mascota, veterinario, propietario, q } = req.query;
+
+    // Si es propietario, filtrar solo sus historias clínicas
+    const filters = { mascota, veterinario, propietario, q };
+    if (req.user.tipoUsuario === 'propietario') {
+      filters.propietario = req.user._id;
+    }
 
     const result = await historiaClinicaService.getAll(
       parseInt(page),
       parseInt(limit),
-      { mascota, veterinario, q }
+      filters
     );
 
     paginatedResponse(

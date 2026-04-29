@@ -11,9 +11,9 @@ class AuthController {
    * POST /api/auth/login
    */
   login = asyncHandler(async (req, res) => {
-    const { email, password } = req.body;
+    const { email, password, tipoUsuario } = req.body;
 
-    const result = await authService.login(email, password);
+    const result = await authService.login(email, password, tipoUsuario);
 
     successResponse(res, result, 'Login exitoso', 200);
   });
@@ -45,7 +45,7 @@ class AuthController {
    * GET /api/auth/profile
    */
   getProfile = asyncHandler(async (req, res) => {
-    const user = await authService.getProfile(req.user._id);
+    const user = await authService.getProfile(req.user._id, req.user.tipoUsuario);
 
     successResponse(res, user, 'Perfil obtenido exitosamente', 200);
   });

@@ -23,10 +23,18 @@ export const createPropietarioValidation = [
     .withMessage('El teléfono no puede exceder 20 caracteres')
     .trim(),
   body('email')
-    .optional()
+    .notEmpty()
+    .withMessage('El email es requerido')
     .isEmail()
     .withMessage('El email debe ser válido')
     .normalizeEmail(),
+  body('password')
+    .notEmpty()
+    .withMessage('La contraseña es requerida')
+    .isLength({ min: 8 })
+    .withMessage('La contraseña debe tener al menos 8 caracteres')
+    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
+    .withMessage('La contraseña debe contener al menos una mayúscula, una minúscula y un número'),
   body('direccion')
     .optional()
     .isLength({ max: 200 })
@@ -59,6 +67,12 @@ export const updatePropietarioValidation = [
     .isEmail()
     .withMessage('El email debe ser válido')
     .normalizeEmail(),
+  body('password')
+    .optional()
+    .isLength({ min: 8 })
+    .withMessage('La contraseña debe tener al menos 8 caracteres')
+    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
+    .withMessage('La contraseña debe contener al menos una mayúscula, una minúscula y un número'),
   body('direccion')
     .optional()
     .isLength({ max: 200 })

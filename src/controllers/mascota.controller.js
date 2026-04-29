@@ -13,10 +13,16 @@ class MascotaController {
   getAll = asyncHandler(async (req, res) => {
     const { page = 1, limit = 10, propietario, especie, search } = req.query;
 
+    // Si es propietario, filtrar solo sus mascotas
+    const filters = { propietario, especie, search };
+    if (req.user.tipoUsuario === 'propietario') {
+      filters.propietario = req.user._id;
+    }
+
     const result = await mascotaService.getAll(
       parseInt(page),
       parseInt(limit),
-      { propietario, especie, search }
+      filters
     );
 
     paginatedResponse(

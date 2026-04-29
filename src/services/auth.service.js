@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { User } from '../models/User.js';
+import { Propietario } from '../models/Propietario.js';
 import { config } from '../config/config.js';
 import { UnauthorizedError, ConflictError, NotFoundError } from '../utils/errors.js';
 
@@ -9,19 +10,41 @@ import { UnauthorizedError, ConflictError, NotFoundError } from '../utils/errors
  */
 class AuthService {
   /**
-   * Login de usuario
+   * Login de usuario (empleados y propietarios)
+   * @param {string} email - Email del usuario
+   * @param {string} password - Contraseña
+   * @param {string} tipoUsuario - 'empleado' o 'propietario'
    */
-  async login(email, password) {
-    // Buscar usuario con password
-    const user = await User.findOne({ email }).select('+password');
+  async login(email, password, tipoUsuario = 'empleado') {
+    let user;
+    let userType;
 
-    if (!user) {
-      throw new UnauthorizedError('Credenciales inválidas');
-    }
+    if (tipoUsuario === 'propietario') {
+      // Buscar propietario con password
+      user = await Propietario.findOne({ email }).select('+password');
+      userType = 'propietario';
 
-    // Verificar si el usuario está activo
-    if (!user.activo) {
-      throw new UnauthorizedError('Usuario desactivado');
+      if (!user) {
+        throw new UnauthorizedError('Credenciales inválidas');
+      }
+
+      // Verificar si el propietario está activo
+      if (!user.activo) {
+        throw new UnauthorizedError('Cuenta desactivada');
+      }
+    } else {
+      // Buscar empleado con password
+      user = await User.findOne({ email }).select('+password');
+      userType = 'empleado';
+
+      if (!user) {
+        throw new UnauthorizedError('Credenciales inválidas');
+      }
+
+      // Verificar si el usuario está activo
+      if (!user.activo) {
+        throw new UnauthorizedError('Usuario desactivado');
+      }
     }
 
     // Comparar contraseña
@@ -32,16 +55,17 @@ class AuthService {
     }
 
     // Generar tokens
-    const token = this.generateToken(user);
-    const refreshToken = this.generateRefreshToken(user);
+    const token = this.generateToken(user, userType);
+    const refreshToken = this.generateRefreshToken(user, userType);
 
     // Retornar usuario sin password
     const userResponse = user.toJSON();
 
     return {
-      user: userResponse,
+      user: { ...userResponse, tipoUsuario: userType },
       token,
       refreshToken,
+      tipoUsuario: userType,
     };
   }
 
@@ -71,15 +95,21 @@ class AuthService {
       // Verificar refresh token
       const decoded = jwt.verify(refreshToken, config.jwt.refreshSecret);
 
-      // Buscar usuario
-      const user = await User.findById(decoded.userId);
+      const tipoUsuario = decoded.tipoUsuario || 'empleado';
+      let user;
+
+      if (tipoUsuario === 'propietario') {
+        user = await Propietario.findById(decoded.userId);
+      } else {
+        user = await User.findById(decoded.userId);
+      }
 
       if (!user || !user.activo) {
         throw new UnauthorizedError('Usuario no encontrado o desactivado');
       }
 
       // Generar nuevo token de acceso
-      const newToken = this.generateToken(user);
+      const newToken = this.generateToken(user, tipoUsuario);
 
       return { token: newToken };
     } catch (error) {
@@ -88,42 +118,52 @@ class AuthService {
   }
 
   /**
-   * Obtener perfil de usuario
+   * Obtener perfil de usuario o propietario
    */
-  async getProfile(userId) {
-    const user = await User.findById(userId);
+  async getProfile(userId, tipoUsuario = 'empleado') {
+    let user;
+
+    if (tipoUsuario === 'propietario') {
+      user = await Propietario.findById(userId);
+    } else {
+      user = await User.findById(userId);
+    }
 
     if (!user) {
       throw new NotFoundError('Usuario no encontrado');
     }
 
-    return user;
+    return { ...user.toJSON(), tipoUsuario };
   }
 
   /**
    * Generar token de acceso JWT
    */
-  generateToken(user) {
-    return jwt.sign(
-      {
-        userId: user._id,
-        email: user.email,
-        rol: user.rol,
-      },
-      config.jwt.secret,
-      {
-        expiresIn: config.jwt.expiresIn,
-      }
-    );
+  generateToken(user, tipoUsuario = 'empleado') {
+    const payload = {
+      userId: user._id,
+      email: user.email,
+      tipoUsuario,
+    };
+
+    // Solo empleados tienen rol
+    if (tipoUsuario === 'empleado') {
+      payload.rol = user.rol;
+    }
+
+    return jwt.sign(payload, config.jwt.secret, {
+      expiresIn: config.jwt.expiresIn,
+    });
   }
 
   /**
    * Generar refresh token JWT
    */
-  generateRefreshToken(user) {
+  generateRefreshToken(user, tipoUsuario = 'empleado') {
     return jwt.sign(
       {
         userId: user._id,
+        tipoUsuario,
       },
       config.jwt.refreshSecret,
       {

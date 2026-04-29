@@ -55,11 +55,11 @@ router.get(
 /**
  * @route   POST /api/citas
  * @desc    Crear nueva cita
- * @access  Private (Administrador, Recepcionista)
+ * @access  Private (Administrador, Recepcionista, Propietario)
  */
 router.post(
   '/',
-  authorize('administrador', 'recepcionista'),
+  authorize('administrador', 'recepcionista', 'propietario'),
   createCitaValidation,
   handleValidationErrors,
   citaController.create
@@ -94,11 +94,11 @@ router.patch(
 /**
  * @route   PATCH /api/citas/:id/cancelar
  * @desc    Cancelar cita
- * @access  Private (Administrador, Recepcionista)
+ * @access  Private (Administrador, Recepcionista, Propietario)
  */
 router.patch(
   '/:id/cancelar',
-  authorize('administrador', 'recepcionista'),
+  authorize('administrador', 'recepcionista', 'propietario'),
   idValidation,
   handleValidationErrors,
   citaController.cancelar

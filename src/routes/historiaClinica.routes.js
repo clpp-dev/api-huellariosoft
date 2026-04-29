@@ -12,11 +12,11 @@ router.use(authenticate);
 /**
  * @route   GET /api/historias-clinicas
  * @desc    Obtener todas las historias clínicas
- * @access  Private (Veterinario, Administrador)
+ * @access  Private (Veterinario, Administrador, Propietario)
  */
 router.get(
   '/',
-  authorize('veterinario', 'administrador'),
+  authorize('veterinario', 'administrador', 'propietario'),
   historiaClinicaController.getAll
 );
 

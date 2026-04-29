@@ -22,14 +22,13 @@ class CitaController {
       q,
     } = req.query;
 
-    const result = await citaService.getAll(parseInt(page), parseInt(limit), {
-      fecha,
-      veterinario,
-      mascota,
-      propietario,
-      estado,
-      q,
-    });
+    // Si es propietario, filtrar solo sus citas
+    const filters = { fecha, veterinario, mascota, propietario, estado, q };
+    if (req.user.tipoUsuario === 'propietario') {
+      filters.propietario = req.user._id;
+    }
+
+    const result = await citaService.getAll(parseInt(page), parseInt(limit), filters);
 
     paginatedResponse(
       res,
