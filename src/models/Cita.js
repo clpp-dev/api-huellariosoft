@@ -37,8 +37,8 @@ const citaSchema = new Schema(
     },
     estado: {
       type: String,
-      enum: ['agendada', 'confirmada', 'en-curso', 'completada', 'cancelada', 'no-asistio'],
-      default: 'agendada',
+      enum: ['pendiente', 'agendada', 'confirmada', 'en-curso', 'completada', 'cancelada', 'no-asistio'],
+      default: 'pendiente',
     },
     observaciones: {
       type: String,

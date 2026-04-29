@@ -82,18 +82,24 @@ class ReporteService {
     ]);
 
     // Contar por estado
+    const pendientes = citas.filter((c) => c.estado === 'pendiente').length;
+    const agendadas = citas.filter((c) => c.estado === 'agendada').length;
     const confirmadas = citas.filter((c) => c.estado === 'confirmada').length;
     const completadas = citas.filter((c) => c.estado === 'completada').length;
     const canceladas = citas.filter((c) => c.estado === 'cancelada').length;
-    const pendientes = citas.filter((c) => c.estado === 'pendiente').length;
+    const enCurso = citas.filter((c) => c.estado === 'en-curso').length;
+    const noAsistio = citas.filter((c) => c.estado === 'no-asistio').length;
 
     return {
       citas,
       totalCitas,
+      pendientes,
+      agendadas,
       confirmadas,
       completadas,
       canceladas,
-      pendientes,
+      enCurso,
+      noAsistio,
       fechaInicio,
       fechaFin,
     };
@@ -127,14 +133,14 @@ class ReporteService {
       Mascota.countDocuments(query),
     ]);
 
-    // Agrupar por especie
+    // Agrupar por especie (case-insensitive para compatibilidad)
     const porEspecie = {
-      canino: mascotas.filter((m) => m.especie === 'canino').length,
-      felino: mascotas.filter((m) => m.especie === 'felino').length,
-      ave: mascotas.filter((m) => m.especie === 'ave').length,
-      reptil: mascotas.filter((m) => m.especie === 'reptil').length,
-      roedor: mascotas.filter((m) => m.especie === 'roedor').length,
-      otro: mascotas.filter((m) => m.especie === 'otro').length,
+      canino: mascotas.filter((m) => m.especie?.toLowerCase() === 'canino').length,
+      felino: mascotas.filter((m) => m.especie?.toLowerCase() === 'felino').length,
+      ave: mascotas.filter((m) => m.especie?.toLowerCase() === 'ave').length,
+      reptil: mascotas.filter((m) => m.especie?.toLowerCase() === 'reptil').length,
+      roedor: mascotas.filter((m) => m.especie?.toLowerCase() === 'roedor').length,
+      otro: mascotas.filter((m) => m.especie?.toLowerCase() === 'otro').length,
     };
 
     return {

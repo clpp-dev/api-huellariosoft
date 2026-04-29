@@ -309,41 +309,41 @@ export const generateCitasReport = (data, stream) => {
          .font('Helvetica-Bold')
          .text(data.totalCitas.toString(), 60, yPosition + 30, { width: cardWidth - 20 });
 
-      // Confirmadas
+      // Pendientes
       doc.roundedRect(50 + cardWidth + gap, yPosition, cardWidth, cardHeight, 5)
          .fillAndStroke(lightGray, lightGray);
       doc.fontSize(9)
          .fillColor(grayColor)
          .font('Helvetica')
-         .text('Confirmadas', 60 + cardWidth + gap, yPosition + 10, { width: cardWidth - 20 });
+         .text('Pendientes', 60 + cardWidth + gap, yPosition + 10, { width: cardWidth - 20 });
       doc.fontSize(18)
-         .fillColor('#10B981')
+         .fillColor('#F59E0B')
          .font('Helvetica-Bold')
-         .text(data.confirmadas.toString(), 60 + cardWidth + gap, yPosition + 30, { width: cardWidth - 20 });
+         .text((data.pendientes || 0).toString(), 60 + cardWidth + gap, yPosition + 30, { width: cardWidth - 20 });
 
-      // Completadas
+      // Confirmadas
       doc.roundedRect(50 + (cardWidth + gap) * 2, yPosition, cardWidth, cardHeight, 5)
          .fillAndStroke(lightGray, lightGray);
       doc.fontSize(9)
          .fillColor(grayColor)
          .font('Helvetica')
-         .text('Completadas', 60 + (cardWidth + gap) * 2, yPosition + 10, { width: cardWidth - 20 });
+         .text('Confirmadas', 60 + (cardWidth + gap) * 2, yPosition + 10, { width: cardWidth - 20 });
       doc.fontSize(18)
-         .fillColor('#059669')
+         .fillColor('#10B981')
          .font('Helvetica-Bold')
-         .text(data.completadas.toString(), 60 + (cardWidth + gap) * 2, yPosition + 30, { width: cardWidth - 20 });
+         .text(data.confirmadas.toString(), 60 + (cardWidth + gap) * 2, yPosition + 30, { width: cardWidth - 20 });
 
-      // Canceladas
+      // Completadas
       doc.roundedRect(50 + (cardWidth + gap) * 3, yPosition, cardWidth, cardHeight, 5)
          .fillAndStroke(lightGray, lightGray);
       doc.fontSize(9)
          .fillColor(grayColor)
          .font('Helvetica')
-         .text('Canceladas', 60 + (cardWidth + gap) * 3, yPosition + 10, { width: cardWidth - 20 });
+         .text('Completadas', 60 + (cardWidth + gap) * 3, yPosition + 10, { width: cardWidth - 20 });
       doc.fontSize(18)
-         .fillColor('#EF4444')
+         .fillColor('#059669')
          .font('Helvetica-Bold')
-         .text(data.canceladas.toString(), 60 + (cardWidth + gap) * 3, yPosition + 30, { width: cardWidth - 20 });
+         .text(data.completadas.toString(), 60 + (cardWidth + gap) * 3, yPosition + 30, { width: cardWidth - 20 });
 
       yPosition += cardHeight + 30;
 
@@ -386,9 +386,16 @@ export const generateCitasReport = (data, stream) => {
         }
         isAlternate = !isAlternate;
 
-        const estadoLabel = cita.estado === 'confirmada' ? 'Confirmada' : 
-                           cita.estado === 'completada' ? 'Completada' :
-                           cita.estado === 'cancelada' ? 'Cancelada' : 'Pendiente';
+        const estadoLabels = {
+          'pendiente': 'Pendiente',
+          'agendada': 'Agendada',
+          'confirmada': 'Confirmada',
+          'en-curso': 'En Curso',
+          'completada': 'Completada',
+          'cancelada': 'Cancelada',
+          'no-asistio': 'No Asistió'
+        };
+        const estadoLabel = estadoLabels[cita.estado] || cita.estado;
 
         doc.fontSize(8)
            .fillColor(darkColor)
@@ -456,7 +463,7 @@ export const generateMascotasReport = (data, stream) => {
          .font('Helvetica-Bold')
          .text(data.totalMascotas.toString(), 60, yPosition + 30, { width: cardWidth - 20 });
 
-      // Por Especie
+      // Por Especie - Caninos
       doc.roundedRect(50 + cardWidth + gap, yPosition, cardWidth, cardHeight, 5)
          .fillAndStroke(lightGray, lightGray);
       doc.fontSize(9)
@@ -466,8 +473,9 @@ export const generateMascotasReport = (data, stream) => {
       doc.fontSize(18)
          .fillColor('#10B981')
          .font('Helvetica-Bold')
-         .text(data.porEspecie.canino || 0, 60 + cardWidth + gap, yPosition + 30, { width: cardWidth - 20 });
+         .text((data.porEspecie?.canino || 0).toString(), 60 + cardWidth + gap, yPosition + 30, { width: cardWidth - 20 });
 
+      // Por Especie - Felinos
       doc.roundedRect(50 + (cardWidth + gap) * 2, yPosition, cardWidth, cardHeight, 5)
          .fillAndStroke(lightGray, lightGray);
       doc.fontSize(9)
@@ -477,7 +485,7 @@ export const generateMascotasReport = (data, stream) => {
       doc.fontSize(18)
          .fillColor('#F59E0B')
          .font('Helvetica-Bold')
-         .text(data.porEspecie.felino || 0, 60 + (cardWidth + gap) * 2, yPosition + 30, { width: cardWidth - 20 });
+         .text((data.porEspecie?.felino || 0).toString(), 60 + (cardWidth + gap) * 2, yPosition + 30, { width: cardWidth - 20 });
 
       yPosition += cardHeight + 30;
 

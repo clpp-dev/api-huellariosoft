@@ -134,10 +134,13 @@ class ReporteController {
     // Enviar solo las estadísticas (sin la lista completa)
     successResponse(res, {
       totalCitas: data.totalCitas,
+      pendientes: data.pendientes,
+      agendadas: data.agendadas,
       confirmadas: data.confirmadas,
       completadas: data.completadas,
       canceladas: data.canceladas,
-      pendientes: data.pendientes,
+      enCurso: data.enCurso,
+      noAsistio: data.noAsistio,
       fechaInicio: data.fechaInicio,
       fechaFin: data.fechaFin,
     });
