@@ -189,7 +189,7 @@ class CitaService {
       veterinario: citaData.veterinario,
       fecha: citaData.fecha,
       hora: citaData.hora,
-      estado: { $nin: ['cancelada', 'no-asistio'] },
+      estado: { $nin: ['cancelada'] },
     });
 
     if (citaExistente) {
@@ -235,7 +235,7 @@ class CitaService {
         veterinario: veterinarioId,
         fecha: fecha,
         hora: hora,
-        estado: { $nin: ['cancelada', 'no-asistio'] },
+        estado: { $nin: ['cancelada'] },
       });
 
       if (citaExistente) {

@@ -62,7 +62,7 @@ export const updateCitaValidation = [
     .trim(),
   body('estado')
     .optional()
-    .isIn(['agendada', 'confirmada', 'en-curso', 'completada', 'cancelada', 'no-asistio'])
+    .isIn(['programada', 'completada', 'cancelada'])
     .withMessage('Estado inválido'),
   body('observaciones')
     .optional()
@@ -79,7 +79,7 @@ export const citaFiltersValidation = [
   query('veterinario').optional().isMongoId().withMessage('ID de veterinario inválido'),
   query('estado')
     .optional()
-    .isIn(['agendada', 'confirmada', 'en-curso', 'completada', 'cancelada', 'no-asistio'])
+    .isIn(['programada', 'completada', 'cancelada'])
     .withMessage('Estado inválido'),
 ];
 

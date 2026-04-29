@@ -82,24 +82,16 @@ class ReporteService {
     ]);
 
     // Contar por estado
-    const pendientes = citas.filter((c) => c.estado === 'pendiente').length;
-    const agendadas = citas.filter((c) => c.estado === 'agendada').length;
-    const confirmadas = citas.filter((c) => c.estado === 'confirmada').length;
+    const programadas = citas.filter((c) => c.estado === 'programada').length;
     const completadas = citas.filter((c) => c.estado === 'completada').length;
     const canceladas = citas.filter((c) => c.estado === 'cancelada').length;
-    const enCurso = citas.filter((c) => c.estado === 'en-curso').length;
-    const noAsistio = citas.filter((c) => c.estado === 'no-asistio').length;
 
     return {
       citas,
       totalCitas,
-      pendientes,
-      agendadas,
-      confirmadas,
+      programadas,
       completadas,
       canceladas,
-      enCurso,
-      noAsistio,
       fechaInicio,
       fechaFin,
     };

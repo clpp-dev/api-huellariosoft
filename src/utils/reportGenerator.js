@@ -293,9 +293,9 @@ export const generateCitasReport = (data, stream) => {
 
       yPosition += 25;
       
-      const cardWidth = 120;
+      const cardWidth = 150;
       const cardHeight = 60;
-      const gap = 20;
+      const gap = 30;
 
       // Total Citas
       doc.roundedRect(50, yPosition, cardWidth, cardHeight, 5)
@@ -309,41 +309,43 @@ export const generateCitasReport = (data, stream) => {
          .font('Helvetica-Bold')
          .text(data.totalCitas.toString(), 60, yPosition + 30, { width: cardWidth - 20 });
 
-      // Pendientes
+      // Programadas
       doc.roundedRect(50 + cardWidth + gap, yPosition, cardWidth, cardHeight, 5)
          .fillAndStroke(lightGray, lightGray);
       doc.fontSize(9)
          .fillColor(grayColor)
          .font('Helvetica')
-         .text('Pendientes', 60 + cardWidth + gap, yPosition + 10, { width: cardWidth - 20 });
+         .text('Programadas', 60 + cardWidth + gap, yPosition + 10, { width: cardWidth - 20 });
       doc.fontSize(18)
          .fillColor('#F59E0B')
          .font('Helvetica-Bold')
-         .text((data.pendientes || 0).toString(), 60 + cardWidth + gap, yPosition + 30, { width: cardWidth - 20 });
+         .text(data.programadas.toString(), 60 + cardWidth + gap, yPosition + 30, { width: cardWidth - 20 });
 
-      // Confirmadas
+      // Completadas
       doc.roundedRect(50 + (cardWidth + gap) * 2, yPosition, cardWidth, cardHeight, 5)
          .fillAndStroke(lightGray, lightGray);
       doc.fontSize(9)
          .fillColor(grayColor)
          .font('Helvetica')
-         .text('Confirmadas', 60 + (cardWidth + gap) * 2, yPosition + 10, { width: cardWidth - 20 });
+         .text('Completadas', 60 + (cardWidth + gap) * 2, yPosition + 10, { width: cardWidth - 20 });
       doc.fontSize(18)
          .fillColor('#10B981')
          .font('Helvetica-Bold')
-         .text(data.confirmadas.toString(), 60 + (cardWidth + gap) * 2, yPosition + 30, { width: cardWidth - 20 });
+         .text(data.completadas.toString(), 60 + (cardWidth + gap) * 2, yPosition + 30, { width: cardWidth - 20 });
 
-      // Completadas
-      doc.roundedRect(50 + (cardWidth + gap) * 3, yPosition, cardWidth, cardHeight, 5)
+      // Segunda fila con Canceladas
+      yPosition += cardHeight + 20;
+      
+      doc.roundedRect(50, yPosition, cardWidth, cardHeight, 5)
          .fillAndStroke(lightGray, lightGray);
       doc.fontSize(9)
          .fillColor(grayColor)
          .font('Helvetica')
-         .text('Completadas', 60 + (cardWidth + gap) * 3, yPosition + 10, { width: cardWidth - 20 });
+         .text('Canceladas', 60, yPosition + 10, { width: cardWidth - 20 });
       doc.fontSize(18)
-         .fillColor('#059669')
+         .fillColor('#EF4444')
          .font('Helvetica-Bold')
-         .text(data.completadas.toString(), 60 + (cardWidth + gap) * 3, yPosition + 30, { width: cardWidth - 20 });
+         .text(data.canceladas.toString(), 60, yPosition + 30, { width: cardWidth - 20 });
 
       yPosition += cardHeight + 30;
 
@@ -387,13 +389,9 @@ export const generateCitasReport = (data, stream) => {
         isAlternate = !isAlternate;
 
         const estadoLabels = {
-          'pendiente': 'Pendiente',
-          'agendada': 'Agendada',
-          'confirmada': 'Confirmada',
-          'en-curso': 'En Curso',
+          'programada': 'Programada',
           'completada': 'Completada',
-          'cancelada': 'Cancelada',
-          'no-asistio': 'No Asistió'
+          'cancelada': 'Cancelada'
         };
         const estadoLabel = estadoLabels[cita.estado] || cita.estado;
 
