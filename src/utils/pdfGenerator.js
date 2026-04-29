@@ -30,7 +30,7 @@ export const generateInvoicePDF = (invoice, stream) => {
       // Logo y Header
       const logoPath = join(__dirname, '../assets/logo.png');
       try {
-        doc.image(logoPath, 50, 45, { width: 120 });
+        doc.image(logoPath, 50, 45, { width: 60 });
       } catch (err) {
         console.log('Logo no encontrado, continuando sin logo');
       }
@@ -39,14 +39,14 @@ export const generateInvoicePDF = (invoice, stream) => {
       doc.fontSize(20)
          .fillColor(primaryColor)
          .font('Helvetica-Bold')
-         .text('HuellarioSoft', 180, 50);
+         .text('HuellarioSoft', 120, 50);
       
       doc.fontSize(9)
          .fillColor(grayColor)
          .font('Helvetica')
-         .text('Sistema de Gestión Veterinaria', 180, 73)
-         .text('Cel: 3103811650 / 3042780151', 180, 86)
-         .text('https://animalhealt-huellariosoft.clperez341.workers.dev/', 180, 99);
+         .text('Sistema de Gestión Veterinaria', 120, 73)
+         .text('Cel: 3103811650 / 3042780151', 120, 86)
+         .text('https://animalhealt-huellariosoft.clperez341.workers.dev/', 120, 99);
 
       // Título FACTURA
       doc.fontSize(28)
