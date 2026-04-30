@@ -143,6 +143,22 @@ class UserService {
   }
 
   /**
+   * Toggle status del usuario (activar/desactivar)
+   */
+  async toggleStatus(id) {
+    const user = await User.findById(id);
+
+    if (!user) {
+      throw new NotFoundError('Usuario no encontrado');
+    }
+
+    user.activo = !user.activo;
+    await user.save();
+
+    return user.toJSON();
+  }
+
+  /**
    * Eliminar usuario permanentemente
    */
   async delete(id) {

@@ -97,6 +97,19 @@ router.patch(
 );
 
 /**
+ * @route   PATCH /api/users/:id/toggle-status
+ * @desc    Toggle status del usuario (activar/desactivar)
+ * @access  Private (Administrador)
+ */
+router.patch(
+  '/:id/toggle-status',
+  authorize('administrador'),
+  idValidation,
+  handleValidationErrors,
+  userController.toggleStatus
+);
+
+/**
  * @route   DELETE /api/users/:id
  * @desc    Eliminar usuario permanentemente
  * @access  Private (Administrador)

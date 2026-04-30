@@ -96,6 +96,21 @@ class UserController {
 
     successResponse(res, users, 'Usuarios obtenidos exitosamente', 200);
   });
+
+  /**
+   * Toggle status del usuario (activar/desactivar)
+   * PATCH /api/users/:id/toggle-status
+   */
+  toggleStatus = asyncHandler(async (req, res) => {
+    const user = await userService.toggleStatus(req.params.id);
+
+    successResponse(
+      res,
+      user,
+      `Usuario ${user.activo ? 'activado' : 'desactivado'} exitosamente`,
+      200
+    );
+  });
 }
 
 export default new UserController();
