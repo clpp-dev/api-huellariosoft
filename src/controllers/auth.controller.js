@@ -61,6 +61,11 @@ class AuthController {
   /**
    * Solicitar recuperación de contraseña
    * POST /api/auth/forgot-password
+   * 
+   * OPTIMIZADO: Respuesta rápida sin esperar envío de email
+   * - El email se envía de forma asíncrona en segundo plano
+   * - Responde inmediatamente al cliente (< 200ms típicamente)
+   * - Ideal para servidores con recursos limitados
    */
   forgotPassword = asyncHandler(async (req, res) => {
     const { email, tipoUsuario } = req.body;
@@ -73,6 +78,8 @@ class AuthController {
   /**
    * Restablecer contraseña con token
    * POST /api/auth/reset-password
+   * 
+   * OPTIMIZADO: Email de confirmación enviado en segundo plano
    */
   resetPassword = asyncHandler(async (req, res) => {
     const { token, newPassword } = req.body;

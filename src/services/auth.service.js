@@ -183,25 +183,24 @@ class AuthService {
     let user;
     let userName;
 
-    // Buscar usuario según tipo
+    // Buscar usuario según tipo (solo campos necesarios para optimizar)
     if (tipoUsuario === 'propietario') {
-      user = await Propietario.findOne({ email });
+      user = await Propietario.findOne({ email }).select('nombreCompleto activo email').lean();
       userName = user?.nombreCompleto || 'Usuario';
     } else {
-      user = await User.findOne({ email });
+      user = await User.findOne({ email }).select('nombre activo email').lean();
       userName = user?.nombre || 'Usuario';
     }
 
-    if (!user) {
-      // Por seguridad, no revelar si el email existe o no
-      return {
-        success: true,
-        message: 'Si el correo existe, recibirás instrucciones para restablecer tu contraseña',
-      };
-    }
+    // Siempre responder lo mismo por seguridad (no revelar si existe el email)
+    const response = {
+      success: true,
+      message: 'Si el correo existe, recibirás instrucciones para restablecer tu contraseña',
+    };
 
-    if (!user.activo) {
-      throw new UnauthorizedError('Cuenta desactivada');
+    // Si no existe el usuario o está inactivo, responder inmediatamente sin hacer nada más
+    if (!user || !user.activo) {
+      return response;
     }
 
     // Generar token de reseteo (32 bytes hexadecimales)
@@ -213,28 +212,31 @@ class AuthService {
       .update(resetToken)
       .digest('hex');
 
-    // Guardar token hasheado y fecha de expiración (1 hora)
-    user.resetPasswordToken = hashedToken;
-    user.resetPasswordExpires = Date.now() + 3600000; // 1 hora
-    await user.save();
+    // Actualizar token de forma optimizada (sin cargar todo el documento)
+    const updateQuery = {
+      resetPasswordToken: hashedToken,
+      resetPasswordExpires: Date.now() + 3600000, // 1 hora
+    };
 
-    // Enviar email con token sin hashear (el que se enviará en la URL)
-    try {
-      await emailService.sendPasswordResetEmail(email, resetToken, userName);
-    } catch (error) {
-      // Si falla el envío, limpiar token
-      user.resetPasswordToken = undefined;
-      user.resetPasswordExpires = undefined;
-      await user.save();
-      
-      console.error('Error al enviar email:', error);
-      throw new Error('Error al enviar el correo de recuperación');
+    if (tipoUsuario === 'propietario') {
+      await Propietario.findByIdAndUpdate(user._id, updateQuery);
+    } else {
+      await User.findByIdAndUpdate(user._id, updateQuery);
     }
 
-    return {
-      success: true,
-      message: 'Si el correo existe, recibirás instrucciones para restablecer tu contraseña',
-    };
+    // OPTIMIZACIÓN CRÍTICA: Enviar email de forma ASÍNCRONA sin bloquear la respuesta
+    // Esto permite responder al cliente inmediatamente
+    emailService.sendPasswordResetEmail(email, resetToken, userName)
+      .then(() => {
+        console.log(`✅ Email de recuperación enviado a: ${email}`);
+      })
+      .catch((error) => {
+        console.error(`❌ Error al enviar email a ${email}:`, error.message);
+        // En un servidor de producción, aquí podrías agregar el email a una cola de reintentos
+      });
+
+    // Responder inmediatamente sin esperar el email
+    return response;
   }
 
   /**
@@ -249,11 +251,11 @@ class AuthService {
       .update(token)
       .digest('hex');
 
-    // Buscar usuario en empleados
+    // Buscar usuario en empleados (solo campos necesarios)
     let user = await User.findOne({
       resetPasswordToken: hashedToken,
       resetPasswordExpires: { $gt: Date.now() },
-    }).select('+resetPasswordToken +resetPasswordExpires');
+    }).select('+resetPasswordToken +resetPasswordExpires password nombre email');
 
     let tipoUsuario = 'empleado';
     let userName;
@@ -263,7 +265,7 @@ class AuthService {
       user = await Propietario.findOne({
         resetPasswordToken: hashedToken,
         resetPasswordExpires: { $gt: Date.now() },
-      }).select('+resetPasswordToken +resetPasswordExpires');
+      }).select('+resetPasswordToken +resetPasswordExpires password nombreCompleto email');
       
       tipoUsuario = 'propietario';
     }
@@ -272,23 +274,28 @@ class AuthService {
       throw new UnauthorizedError('Token inválido o expirado');
     }
 
+    // Guardar email y nombre antes de actualizar
+    const userEmail = user.email;
+    userName = tipoUsuario === 'propietario' ? user.nombreCompleto : user.nombre;
+
     // Actualizar contraseña
     user.password = newPassword;
     user.resetPasswordToken = undefined;
     user.resetPasswordExpires = undefined;
     await user.save();
 
-    // Nombre para el email
-    userName = tipoUsuario === 'propietario' ? user.nombreCompleto : user.nombre;
+    // OPTIMIZACIÓN: Enviar email de confirmación de forma ASÍNCRONA
+    // No esperamos a que se envíe para responder al cliente
+    emailService.sendPasswordChangedEmail(userEmail, userName)
+      .then(() => {
+        console.log(`✅ Email de confirmación enviado a: ${userEmail}`);
+      })
+      .catch((error) => {
+        console.error(`❌ Error al enviar email de confirmación a ${userEmail}:`, error.message);
+        // No afecta el cambio de contraseña que ya se completó
+      });
 
-    // Enviar email de confirmación
-    try {
-      await emailService.sendPasswordChangedEmail(user.email, userName);
-    } catch (error) {
-      console.error('Error al enviar email de confirmación:', error);
-      // No lanzar error, la contraseña ya se cambió exitosamente
-    }
-
+    // Responder inmediatamente
     return {
       success: true,
       message: 'Contraseña actualizada exitosamente',
