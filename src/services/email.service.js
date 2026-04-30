@@ -372,22 +372,6 @@ class EmailService {
                 background: white;
                 color: #1f2937;
               }
-              .success-badge {
-                width: 80px;
-                height: 80px;
-                background: linear-gradient(135deg, #10B981 0%, #059669 100%);
-                border-radius: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                margin: 0 auto 30px;
-                box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-              }
-              .success-badge svg {
-                width: 45px;
-                height: 45px;
-                color: white;
-              }
               .content h2 {
                 color: #111827;
                 font-size: 24px;
@@ -450,11 +434,6 @@ class EmailService {
               </div>
               
               <div class="content">
-                <div class="success-badge">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
                 
                 <h2>Contraseña Actualizada Exitosamente</h2>
                 
