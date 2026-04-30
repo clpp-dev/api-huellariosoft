@@ -12,22 +12,22 @@ router.use(authenticate);
 /**
  * @route   GET /api/facturas/estadisticas
  * @desc    Obtener estadísticas de facturación
- * @access  Private (Administrador)
+ * @access  Private (Administrador, Veterinario)
  */
 router.get(
   '/estadisticas',
-  authorize('administrador'),
+  authorize('administrador', 'veterinario'),
   facturaController.getEstadisticas
 );
 
 /**
  * @route   GET /api/facturas
  * @desc    Obtener todas las facturas
- * @access  Private (Administrador, Recepcionista)
+ * @access  Private (Administrador, Veterinario, Recepcionista)
  */
 router.get(
   '/',
-  authorize('administrador', 'recepcionista'),
+  authorize('administrador', 'veterinario', 'recepcionista'),
   facturaController.getAll
 );
 
@@ -67,22 +67,22 @@ router.get(
 /**
  * @route   POST /api/facturas
  * @desc    Crear nueva factura
- * @access  Private (Administrador, Recepcionista)
+ * @access  Private (Administrador, Veterinario, Recepcionista)
  */
 router.post(
   '/',
-  authorize('administrador', 'recepcionista'),
+  authorize('administrador', 'veterinario', 'recepcionista'),
   facturaController.create
 );
 
 /**
  * @route   PUT /api/facturas/:id
  * @desc    Actualizar factura
- * @access  Private (Administrador, Recepcionista)
+ * @access  Private (Administrador, Veterinario, Recepcionista)
  */
 router.put(
   '/:id',
-  authorize('administrador', 'recepcionista'),
+  authorize('administrador', 'veterinario', 'recepcionista'),
   idValidation,
   handleValidationErrors,
   facturaController.update
@@ -91,11 +91,11 @@ router.put(
 /**
  * @route   PATCH /api/facturas/:id/pagar
  * @desc    Marcar factura como pagada
- * @access  Private (Administrador, Recepcionista)
+ * @access  Private (Administrador, Veterinario, Recepcionista)
  */
 router.patch(
   '/:id/pagar',
-  authorize('administrador', 'recepcionista'),
+  authorize('administrador', 'veterinario', 'recepcionista'),
   idValidation,
   handleValidationErrors,
   facturaController.marcarComoPagada
@@ -104,11 +104,11 @@ router.patch(
 /**
  * @route   PATCH /api/facturas/:id/anular
  * @desc    Anular factura
- * @access  Private (Administrador)
+ * @access  Private (Administrador, Veterinario)
  */
 router.patch(
   '/:id/anular',
-  authorize('administrador'),
+  authorize('administrador', 'veterinario'),
   idValidation,
   handleValidationErrors,
   facturaController.anular
@@ -117,11 +117,11 @@ router.patch(
 /**
  * @route   DELETE /api/facturas/:id
  * @desc    Eliminar factura
- * @access  Private (Administrador)
+ * @access  Private (Administrador, Veterinario)
  */
 router.delete(
   '/:id',
-  authorize('administrador'),
+  authorize('administrador', 'veterinario'),
   idValidation,
   handleValidationErrors,
   facturaController.delete
