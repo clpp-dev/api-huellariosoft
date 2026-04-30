@@ -19,11 +19,11 @@ router.get('/search', inventarioController.search);
 /**
  * @route   GET /api/inventario/stock-bajo
  * @desc    Obtener productos con stock bajo
- * @access  Private (Administrador, Auxiliar)
+ * @access  Private (Administrador, Veterinario, Auxiliar)
  */
 router.get(
   '/stock-bajo',
-  authorize('administrador', 'auxiliar'),
+  authorize('administrador', 'veterinario', 'auxiliar'),
   inventarioController.getStockBajo
 );
 
