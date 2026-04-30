@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import { User } from '../models/User.js';
 import { Propietario } from '../models/Propietario.js';
 import { config } from '../config/config.js';
-import { UnauthorizedError, ConflictError, NotFoundError } from '../utils/errors.js';
+import { UnauthorizedError, ConflictError, NotFoundError, ValidationError, InternalServerError } from '../utils/errors.js';
 import emailService from './email.service.js';
 
 /**
@@ -183,7 +183,7 @@ class AuthService {
     let user;
     let userName;
 
-    // Buscar usuario según tipo (solo campos necesarios para optimizar)
+    // Buscar usuario según tipo seleccionado
     if (tipoUsuario === 'propietario') {
       user = await Propietario.findOne({ email }).select('nombreCompleto activo email').lean();
       userName = user?.nombreCompleto || 'Usuario';
@@ -192,8 +192,33 @@ class AuthService {
       userName = user?.nombre || 'Usuario';
     }
 
-    // Si no existe el usuario o está inactivo, responder sin revelar información
-    if (!user || !user.activo) {
+    // Si no existe el usuario, verificar si existe en la tabla opuesta
+    if (!user) {
+      let userInOppositeTable;
+      
+      if (tipoUsuario === 'propietario') {
+        // Buscó en Propietario pero no encontró, verificar en User
+        userInOppositeTable = await User.findOne({ email }).select('email').lean();
+        if (userInOppositeTable) {
+          throw new ValidationError('Este correo está registrado como empleado. Por favor selecciona "Empleado" como tipo de usuario e intenta nuevamente.');
+        }
+      } else {
+        // Buscó en User pero no encontró, verificar en Propietario
+        userInOppositeTable = await Propietario.findOne({ email }).select('email').lean();
+        if (userInOppositeTable) {
+          throw new ValidationError('Este correo está registrado como propietario. Por favor selecciona "Propietario" como tipo de usuario e intenta nuevamente.');
+        }
+      }
+      
+      // No existe en ninguna tabla, responder con mensaje genérico por seguridad
+      return {
+        success: true,
+        message: 'Si el correo existe en el sistema, recibirás instrucciones para restablecer tu contraseña',
+      };
+    }
+
+    // Si el usuario existe pero está inactivo
+    if (!user.activo) {
       return {
         success: true,
         message: 'Si el correo existe en el sistema, recibirás instrucciones para restablecer tu contraseña',
@@ -246,7 +271,7 @@ class AuthService {
       }
       
       // Ser honesto con el usuario sobre el fallo
-      throw new Error('No se pudo enviar el correo de recuperación. Por favor, intenta nuevamente o contacta al administrador');
+      throw new InternalServerError('No se pudo enviar el correo de recuperación. Por favor, intenta nuevamente o contacta al administrador');
     }
   }
 
