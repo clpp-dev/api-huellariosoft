@@ -71,3 +71,32 @@ export const updateUserValidation = [
 export const idValidation = [
   param('id').isMongoId().withMessage('ID inválido'),
 ];
+
+/**
+ * Validaciones para cambio de contraseña
+ */
+export const changePasswordValidation = [
+  body('currentPassword')
+    .notEmpty()
+    .withMessage('La contraseña actual es requerida'),
+  body('newPassword')
+    .notEmpty()
+    .withMessage('La nueva contraseña es requerida')
+    .isLength({ min: 6 })
+    .withMessage('La nueva contraseña debe tener al menos 6 caracteres')
+    .custom((value, { req }) => {
+      if (value === req.body.currentPassword) {
+        throw new Error('La nueva contraseña debe ser diferente a la actual');
+      }
+      return true;
+    }),
+  body('confirmPassword')
+    .notEmpty()
+    .withMessage('Confirma la nueva contraseña')
+    .custom((value, { req }) => {
+      if (value !== req.body.newPassword) {
+        throw new Error('Las contraseñas no coinciden');
+      }
+      return true;
+    }),
+];

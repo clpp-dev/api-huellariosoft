@@ -334,6 +334,53 @@ class AuthService {
       message: 'Contraseña actualizada exitosamente',
     };
   }
+
+  /**
+   * Cambiar contraseña del usuario autenticado
+   * @param {string} userId - ID del usuario
+   * @param {string} currentPassword - Contraseña actual
+   * @param {string} newPassword - Nueva contraseña
+   * @param {string} tipoUsuario - 'empleado' o 'propietario'
+   */
+  async changePassword(userId, currentPassword, newPassword, tipoUsuario = 'empleado') {
+    let user;
+
+    // Buscar usuario según tipo
+    if (tipoUsuario === 'propietario') {
+      user = await Propietario.findById(userId).select('+password email nombreCompleto');
+    } else {
+      user = await User.findById(userId).select('+password email nombre');
+    }
+
+    if (!user) {
+      throw new NotFoundError('Usuario no encontrado');
+    }
+
+    // Verificar que la contraseña actual sea correcta
+    const isPasswordValid = await user.comparePassword(currentPassword);
+
+    if (!isPasswordValid) {
+      throw new UnauthorizedError('La contraseña actual es incorrecta');
+    }
+
+    // Actualizar a la nueva contraseña
+    user.password = newPassword;
+    await user.save();
+
+    // Enviar email de confirmación (no crítico si falla)
+    try {
+      const userName = tipoUsuario === 'propietario' ? user.nombreCompleto : user.nombre;
+      await emailService.sendPasswordChangedEmail(user.email, userName);
+      console.log(`✅ Email de confirmación de cambio de contraseña enviado a: ${user.email}`);
+    } catch (error) {
+      console.error(`❌ Error al enviar email de confirmación a ${user.email}:`, error.message);
+    }
+
+    return {
+      success: true,
+      message: 'Contraseña actualizada exitosamente',
+    };
+  }
 }
 
 export default new AuthService();

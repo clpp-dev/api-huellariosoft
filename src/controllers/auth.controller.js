@@ -90,6 +90,23 @@ class AuthController {
 
     successResponse(res, result, result.message, 200);
   });
+
+  /**
+   * Cambiar contraseña del usuario autenticado
+   * POST /api/auth/change-password
+   * 
+   * Requiere autenticación
+   * - Valida la contraseña actual antes de cambiarla
+   * - Envía email de confirmación (no crítico si falla)
+   */
+  changePassword = asyncHandler(async (req, res) => {
+    const { currentPassword, newPassword } = req.body;
+    const { _id, tipoUsuario } = req.user;
+
+    const result = await authService.changePassword(_id, currentPassword, newPassword, tipoUsuario);
+
+    successResponse(res, result, result.message, 200);
+  });
 }
 
 export default new AuthController();

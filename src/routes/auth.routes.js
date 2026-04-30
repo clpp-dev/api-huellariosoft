@@ -2,7 +2,7 @@ import { Router } from 'express';
 import authController from '../controllers/auth.controller.js';
 import { authenticate } from '../middlewares/auth.js';
 import { handleValidationErrors } from '../middlewares/validation.js';
-import { loginValidation } from '../validators/auth.validator.js';
+import { loginValidation, changePasswordValidation } from '../validators/auth.validator.js';
 
 const router = Router();
 
@@ -47,5 +47,18 @@ router.post('/forgot-password', authController.forgotPassword);
  * @access  Public
  */
 router.post('/reset-password', authController.resetPassword);
+
+/**
+ * @route   POST /api/auth/change-password
+ * @desc    Cambiar contraseña del usuario autenticado
+ * @access  Private
+ */
+router.post(
+  '/change-password',
+  authenticate,
+  changePasswordValidation,
+  handleValidationErrors,
+  authController.changePassword
+);
 
 export default router;
