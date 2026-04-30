@@ -22,6 +22,15 @@ class EmailService {
    */
   initializeTransporter() {
     try {
+      // Validar que las credenciales existen
+      if (!config.mail.host || !config.mail.auth.user || !config.mail.auth.pass) {
+        console.error('❌ Error: Faltan credenciales de email en el archivo .env');
+        console.error('   MAIL_HOST:', config.mail.host);
+        console.error('   MAIL_USER:', config.mail.auth.user);
+        console.error('   MAIL_PASSWORD:', config.mail.auth.pass ? '***' : 'NO CONFIGURADO');
+        return;
+      }
+
       this.transporter = nodemailer.createTransport({
         host: config.mail.host,
         port: config.mail.port,
@@ -30,9 +39,23 @@ class EmailService {
           user: config.mail.auth.user,
           pass: config.mail.auth.pass,
         },
+        // Agregar opciones adicionales para debug
+        debug: process.env.NODE_ENV === 'development', // Muestra logs en desarrollo
+        logger: process.env.NODE_ENV === 'development', // Habilita logger
+        tls: {
+          // No fallar en certificados auto-firmados
+          rejectUnauthorized: false
+        }
       });
 
       console.log('✉️  Servicio de email inicializado correctamente');
+      console.log('   Host:', config.mail.host);
+      console.log('   Port:', config.mail.port);
+      console.log('   Secure:', config.mail.secure);
+      console.log('   User:', config.mail.auth.user);
+      
+      // Verificar conexión al inicializar
+      this.verifyConnection();
     } catch (error) {
       console.error('❌ Error al inicializar servicio de email:', error);
     }
@@ -46,11 +69,19 @@ class EmailService {
    */
   async sendPasswordResetEmail(to, resetToken, userName) {
     try {
+      if (!this.transporter) {
+        throw new Error('Transportador de email no inicializado. Verifica la configuración en .env');
+      }
+
       // URL del frontend para resetear contraseña
       const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/reset-password?token=${resetToken}`;
 
       // Ruta del logo
       const logoPath = path.join(__dirname, '../assets/logo.png');
+
+      console.log('📧 Intentando enviar email de recuperación...');
+      console.log('   Destinatario:', to);
+      console.log('   Remitente:', config.mail.from);
 
       const mailOptions = {
         from: config.mail.from,
@@ -247,10 +278,25 @@ class EmailService {
       };
 
       const info = await this.transporter.sendMail(mailOptions);
-      console.log('✅ Email de recuperación enviado:', info.messageId);
+      console.log('✅ Email de recuperación enviado exitosamente');
+      console.log('   Message ID:', info.messageId);
+      console.log('   Response:', info.response);
       return { success: true, messageId: info.messageId };
     } catch (error) {
-      console.error('❌ Error al enviar email de recuperación:', error);
+      console.error('❌ Error al enviar email de recuperación');
+      console.error('   Error code:', error.code);
+      console.error('   Error message:', error.message);
+      console.error('   Command:', error.command);
+      
+      // Errores comunes y sus soluciones
+      if (error.code === 'EAUTH') {
+        console.error('   💡 Solución: Verifica usuario y contraseña del email');
+      } else if (error.code === 'ESOCKET') {
+        console.error('   💡 Solución: Verifica la conexión al servidor SMTP');
+      } else if (error.code === 'ETIMEDOUT') {
+        console.error('   💡 Solución: El servidor SMTP no responde. Verifica host y puerto');
+      }
+      
       throw error;
     }
   }
