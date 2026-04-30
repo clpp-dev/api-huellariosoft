@@ -192,15 +192,12 @@ class AuthService {
       userName = user?.nombre || 'Usuario';
     }
 
-    // Siempre responder lo mismo por seguridad (no revelar si existe el email)
-    const response = {
-      success: true,
-      message: 'Si el correo existe, recibirás instrucciones para restablecer tu contraseña',
-    };
-
-    // Si no existe el usuario o está inactivo, responder inmediatamente sin hacer nada más
+    // Si no existe el usuario o está inactivo, responder sin revelar información
     if (!user || !user.activo) {
-      return response;
+      return {
+        success: true,
+        message: 'Si el correo existe en el sistema, recibirás instrucciones para restablecer tu contraseña',
+      };
     }
 
     // Generar token de reseteo (32 bytes hexadecimales)
@@ -224,19 +221,33 @@ class AuthService {
       await User.findByIdAndUpdate(user._id, updateQuery);
     }
 
-    // OPTIMIZACIÓN CRÍTICA: Enviar email de forma ASÍNCRONA sin bloquear la respuesta
-    // Esto permite responder al cliente inmediatamente
-    emailService.sendPasswordResetEmail(email, resetToken, userName)
-      .then(() => {
-        console.log(`✅ Email de recuperación enviado a: ${email}`);
-      })
-      .catch((error) => {
-        console.error(`❌ Error al enviar email a ${email}:`, error.message);
-        // En un servidor de producción, aquí podrías agregar el email a una cola de reintentos
-      });
-
-    // Responder inmediatamente sin esperar el email
-    return response;
+    // Intentar enviar el email y esperar el resultado
+    try {
+      await emailService.sendPasswordResetEmail(email, resetToken, userName);
+      console.log(`✅ Email de recuperación enviado exitosamente a: ${email}`);
+      
+      return {
+        success: true,
+        message: 'Se ha enviado un correo con las instrucciones para restablecer tu contraseña',
+      };
+    } catch (emailError) {
+      console.error(`❌ Error al enviar email a ${email}:`, emailError.message);
+      
+      // Limpiar el token si falló el envío del email
+      const clearTokenQuery = {
+        resetPasswordToken: null,
+        resetPasswordExpires: null,
+      };
+      
+      if (tipoUsuario === 'propietario') {
+        await Propietario.findByIdAndUpdate(user._id, clearTokenQuery);
+      } else {
+        await User.findByIdAndUpdate(user._id, clearTokenQuery);
+      }
+      
+      // Ser honesto con el usuario sobre el fallo
+      throw new Error('No se pudo enviar el correo de recuperación. Por favor, intenta nuevamente o contacta al administrador');
+    }
   }
 
   /**
@@ -284,18 +295,15 @@ class AuthService {
     user.resetPasswordExpires = undefined;
     await user.save();
 
-    // OPTIMIZACIÓN: Enviar email de confirmación de forma ASÍNCRONA
-    // No esperamos a que se envíe para responder al cliente
-    emailService.sendPasswordChangedEmail(userEmail, userName)
-      .then(() => {
-        console.log(`✅ Email de confirmación enviado a: ${userEmail}`);
-      })
-      .catch((error) => {
-        console.error(`❌ Error al enviar email de confirmación a ${userEmail}:`, error.message);
-        // No afecta el cambio de contraseña que ya se completó
-      });
+    // Intentar enviar email de confirmación (no crítico si falla)
+    try {
+      await emailService.sendPasswordChangedEmail(userEmail, userName);
+      console.log(`✅ Email de confirmación enviado a: ${userEmail}`);
+    } catch (error) {
+      // Loguear el error pero no fallar - la contraseña ya fue cambiada exitosamente
+      console.error(`❌ Error al enviar email de confirmación a ${userEmail}:`, error.message);
+    }
 
-    // Responder inmediatamente
     return {
       success: true,
       message: 'Contraseña actualizada exitosamente',

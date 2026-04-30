@@ -39,6 +39,10 @@ class EmailService {
           user: config.mail.auth.user,
           pass: config.mail.auth.pass,
         },
+        // Timeout de conexión: 15 segundos (balance entre espera y posibilidad de éxito)
+        connectionTimeout: 15000,
+        // Timeout de socket: 15 segundos
+        socketTimeout: 15000,
         // Agregar opciones adicionales para debug
         debug: process.env.NODE_ENV === 'development', // Muestra logs en desarrollo
         logger: process.env.NODE_ENV === 'development', // Habilita logger
