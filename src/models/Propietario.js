@@ -48,6 +48,14 @@ const propietarioSchema = new Schema(
       type: Boolean,
       default: true,
     },
+    resetPasswordToken: {
+      type: String,
+      select: false, // No incluir en queries por defecto
+    },
+    resetPasswordExpires: {
+      type: Date,
+      select: false, // No incluir en queries por defecto
+    },
   },
   {
     timestamps: true,

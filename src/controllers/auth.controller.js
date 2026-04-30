@@ -57,6 +57,30 @@ class AuthController {
   logout = asyncHandler(async (req, res) => {
     successResponse(res, null, 'Logout exitoso', 200);
   });
+
+  /**
+   * Solicitar recuperación de contraseña
+   * POST /api/auth/forgot-password
+   */
+  forgotPassword = asyncHandler(async (req, res) => {
+    const { email, tipoUsuario } = req.body;
+
+    const result = await authService.forgotPassword(email, tipoUsuario);
+
+    successResponse(res, result, result.message, 200);
+  });
+
+  /**
+   * Restablecer contraseña con token
+   * POST /api/auth/reset-password
+   */
+  resetPassword = asyncHandler(async (req, res) => {
+    const { token, newPassword } = req.body;
+
+    const result = await authService.resetPassword(token, newPassword);
+
+    successResponse(res, result, result.message, 200);
+  });
 }
 
 export default new AuthController();

@@ -1,8 +1,10 @@
 import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
 import { User } from '../models/User.js';
 import { Propietario } from '../models/Propietario.js';
 import { config } from '../config/config.js';
 import { UnauthorizedError, ConflictError, NotFoundError } from '../utils/errors.js';
+import emailService from './email.service.js';
 
 /**
  * Servicio de autenticación
@@ -170,6 +172,127 @@ class AuthService {
         expiresIn: config.jwt.refreshExpiresIn,
       }
     );
+  }
+
+  /**
+   * Solicitar recuperación de contraseña
+   * @param {string} email - Email del usuario
+   * @param {string} tipoUsuario - 'empleado' o 'propietario'
+   */
+  async forgotPassword(email, tipoUsuario = 'empleado') {
+    let user;
+    let userName;
+
+    // Buscar usuario según tipo
+    if (tipoUsuario === 'propietario') {
+      user = await Propietario.findOne({ email });
+      userName = user?.nombreCompleto || 'Usuario';
+    } else {
+      user = await User.findOne({ email });
+      userName = user?.nombre || 'Usuario';
+    }
+
+    if (!user) {
+      // Por seguridad, no revelar si el email existe o no
+      return {
+        success: true,
+        message: 'Si el correo existe, recibirás instrucciones para restablecer tu contraseña',
+      };
+    }
+
+    if (!user.activo) {
+      throw new UnauthorizedError('Cuenta desactivada');
+    }
+
+    // Generar token de reseteo (32 bytes hexadecimales)
+    const resetToken = crypto.randomBytes(32).toString('hex');
+
+    // Hashear token antes de guardarlo (por seguridad)
+    const hashedToken = crypto
+      .createHash('sha256')
+      .update(resetToken)
+      .digest('hex');
+
+    // Guardar token hasheado y fecha de expiración (1 hora)
+    user.resetPasswordToken = hashedToken;
+    user.resetPasswordExpires = Date.now() + 3600000; // 1 hora
+    await user.save();
+
+    // Enviar email con token sin hashear (el que se enviará en la URL)
+    try {
+      await emailService.sendPasswordResetEmail(email, resetToken, userName);
+    } catch (error) {
+      // Si falla el envío, limpiar token
+      user.resetPasswordToken = undefined;
+      user.resetPasswordExpires = undefined;
+      await user.save();
+      
+      console.error('Error al enviar email:', error);
+      throw new Error('Error al enviar el correo de recuperación');
+    }
+
+    return {
+      success: true,
+      message: 'Si el correo existe, recibirás instrucciones para restablecer tu contraseña',
+    };
+  }
+
+  /**
+   * Restablecer contraseña con token
+   * @param {string} token - Token de reseteo
+   * @param {string} newPassword - Nueva contraseña
+   */
+  async resetPassword(token, newPassword) {
+    // Hashear token recibido para comparar
+    const hashedToken = crypto
+      .createHash('sha256')
+      .update(token)
+      .digest('hex');
+
+    // Buscar usuario en empleados
+    let user = await User.findOne({
+      resetPasswordToken: hashedToken,
+      resetPasswordExpires: { $gt: Date.now() },
+    }).select('+resetPasswordToken +resetPasswordExpires');
+
+    let tipoUsuario = 'empleado';
+    let userName;
+
+    // Si no se encuentra en empleados, buscar en propietarios
+    if (!user) {
+      user = await Propietario.findOne({
+        resetPasswordToken: hashedToken,
+        resetPasswordExpires: { $gt: Date.now() },
+      }).select('+resetPasswordToken +resetPasswordExpires');
+      
+      tipoUsuario = 'propietario';
+    }
+
+    if (!user) {
+      throw new UnauthorizedError('Token inválido o expirado');
+    }
+
+    // Actualizar contraseña
+    user.password = newPassword;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save();
+
+    // Nombre para el email
+    userName = tipoUsuario === 'propietario' ? user.nombreCompleto : user.nombre;
+
+    // Enviar email de confirmación
+    try {
+      await emailService.sendPasswordChangedEmail(user.email, userName);
+    } catch (error) {
+      console.error('Error al enviar email de confirmación:', error);
+      // No lanzar error, la contraseña ya se cambió exitosamente
+    }
+
+    return {
+      success: true,
+      message: 'Contraseña actualizada exitosamente',
+    };
   }
 }
 
