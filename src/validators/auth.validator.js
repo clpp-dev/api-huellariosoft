@@ -13,8 +13,8 @@ export const loginValidation = [
   body('password')
     .notEmpty()
     .withMessage('La contraseña es requerida')
-    .isLength({ min: 6 })
-    .withMessage('La contraseña debe tener al menos 6 caracteres'),
+    .isLength({ min: 8 })
+    .withMessage('La contraseña debe tener al menos 8 caracteres'),
 ];
 
 /**
@@ -36,8 +36,8 @@ export const registerUserValidation = [
   body('password')
     .notEmpty()
     .withMessage('La contraseña es requerida')
-    .isLength({ min: 6 })
-    .withMessage('La contraseña debe tener al menos 6 caracteres'),
+    .isLength({ min: 8 })
+    .withMessage('La contraseña debe tener al menos 8 caracteres'),
   body('rol')
     .notEmpty()
     .withMessage('El rol es requerido')
@@ -82,8 +82,8 @@ export const changePasswordValidation = [
   body('newPassword')
     .notEmpty()
     .withMessage('La nueva contraseña es requerida')
-    .isLength({ min: 6 })
-    .withMessage('La nueva contraseña debe tener al menos 6 caracteres')
+    .isLength({ min: 8 })
+    .withMessage('La nueva contraseña debe tener al menos 8 caracteres')
     .custom((value, { req }) => {
       if (value === req.body.currentPassword) {
         throw new Error('La nueva contraseña debe ser diferente a la actual');
