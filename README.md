@@ -302,7 +302,3 @@ Este proyecto es de uso privado para HuellarioSoft.
 ## 📞 Soporte
 
 Para soporte o preguntas, contacta a: [email protected]
-
----
-
-**⭐ Si este proyecto te fue útil, dale una estrella en GitHub**
