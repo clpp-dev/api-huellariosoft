@@ -298,7 +298,3 @@ Este proyecto es de uso privado para HuellarioSoft.
 ## 👥 Autor
 
 **HuellarioSoft Team**
-
-## 📞 Soporte
-
-Para soporte o preguntas, contacta a: [email protected]
