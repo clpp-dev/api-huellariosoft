@@ -78,11 +78,11 @@ router.post(
 /**
  * @route   PUT /api/facturas/:id
  * @desc    Actualizar factura
- * @access  Private (Administrador, Veterinario, Recepcionista)
+ * @access  Private (Administrador, Veterinario)
  */
 router.put(
   '/:id',
-  authorize('administrador', 'veterinario', 'recepcionista'),
+  authorize('administrador', 'veterinario'),
   idValidation,
   handleValidationErrors,
   facturaController.update
