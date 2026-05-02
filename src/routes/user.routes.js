@@ -23,11 +23,11 @@ router.get('/', authorize('administrador'), userController.getAll);
 /**
  * @route   GET /api/users/role/:rol
  * @desc    Obtener usuarios por rol
- * @access  Private (Administrador, Recepcionista, Propietario)
+ * @access  Private (Administrador, Recepcionista, Auxiliar, Veterinario, Propietario)
  */
 router.get(
   '/role/:rol',
-  authorize('administrador', 'recepcionista', 'propietario'),
+  authorize('administrador', 'recepcionista', 'auxiliar', 'veterinario', 'propietario'),
   userController.getByRole
 );
 

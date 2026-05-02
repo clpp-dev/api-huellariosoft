@@ -55,11 +55,11 @@ router.get(
 /**
  * @route   POST /api/propietarios
  * @desc    Crear nuevo propietario
- * @access  Private (Administrador, Recepcionista, Veterinario)
+ * @access  Private (Administrador, Recepcionista, Veterinario, Auxiliar)
  */
 router.post(
   '/',
-  authorize('administrador', 'recepcionista', 'veterinario'),
+  authorize('administrador', 'recepcionista', 'veterinario', 'auxiliar'),
   createPropietarioValidation,
   handleValidationErrors,
   propietarioController.create
@@ -68,11 +68,11 @@ router.post(
 /**
  * @route   PUT /api/propietarios/:id
  * @desc    Actualizar propietario
- * @access  Private (Administrador, Recepcionista, Veterinario)
+ * @access  Private (Administrador, Recepcionista, Veterinario, Auxiliar)
  */
 router.put(
   '/:id',
-  authorize('administrador', 'recepcionista', 'veterinario'),
+  authorize('administrador', 'recepcionista', 'veterinario', 'auxiliar'),
   updatePropietarioValidation,
   handleValidationErrors,
   propietarioController.update
