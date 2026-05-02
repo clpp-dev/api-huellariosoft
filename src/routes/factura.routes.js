@@ -23,11 +23,11 @@ router.get(
 /**
  * @route   GET /api/facturas
  * @desc    Obtener todas las facturas
- * @access  Private (Administrador, Veterinario, Recepcionista)
+ * @access  Private (Administrador, Veterinario, Recepcionista, Auxiliar)
  */
 router.get(
   '/',
-  authorize('administrador', 'veterinario', 'recepcionista'),
+  authorize('administrador', 'veterinario', 'recepcionista', 'auxiliar'),
   facturaController.getAll
 );
 
@@ -67,11 +67,11 @@ router.get(
 /**
  * @route   POST /api/facturas
  * @desc    Crear nueva factura
- * @access  Private (Administrador, Veterinario, Recepcionista)
+ * @access  Private (Administrador, Veterinario, Recepcionista, Auxiliar)
  */
 router.post(
   '/',
-  authorize('administrador', 'veterinario', 'recepcionista'),
+  authorize('administrador', 'veterinario', 'recepcionista', 'auxiliar'),
   facturaController.create
 );
 
@@ -91,11 +91,11 @@ router.put(
 /**
  * @route   PATCH /api/facturas/:id/pagar
  * @desc    Marcar factura como pagada
- * @access  Private (Administrador, Veterinario, Recepcionista)
+ * @access  Private (Administrador, Veterinario, Recepcionista, Auxiliar)
  */
 router.patch(
   '/:id/pagar',
-  authorize('administrador', 'veterinario', 'recepcionista'),
+  authorize('administrador', 'veterinario', 'recepcionista', 'auxiliar'),
   idValidation,
   handleValidationErrors,
   facturaController.marcarComoPagada
@@ -104,11 +104,11 @@ router.patch(
 /**
  * @route   PATCH /api/facturas/:id/anular
  * @desc    Anular factura
- * @access  Private (Administrador, Veterinario)
+ * @access  Private (Administrador, Veterinario, Recepcionista, Auxiliar)
  */
 router.patch(
   '/:id/anular',
-  authorize('administrador', 'veterinario'),
+  authorize('administrador', 'veterinario', 'recepcionista', 'auxiliar'),
   idValidation,
   handleValidationErrors,
   facturaController.anular
