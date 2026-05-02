@@ -19,11 +19,11 @@ router.get('/search', inventarioController.search);
 /**
  * @route   GET /api/inventario/stock-bajo
  * @desc    Obtener productos con stock bajo
- * @access  Private (Administrador, Veterinario, Auxiliar)
+ * @access  Private (Administrador, Veterinario, Auxiliar, Recepcionista)
  */
 router.get(
   '/stock-bajo',
-  authorize('administrador', 'veterinario', 'auxiliar'),
+  authorize('administrador', 'veterinario', 'auxiliar', 'recepcionista'),
   inventarioController.getStockBajo
 );
 
@@ -78,11 +78,11 @@ router.post(
 /**
  * @route   PUT /api/inventario/:id
  * @desc    Actualizar producto
- * @access  Private (Administrador, Auxiliar)
+ * @access  Private (Administrador, Auxiliar, Recepcionista)
  */
 router.put(
   '/:id',
-  authorize('administrador', 'auxiliar'),
+  authorize('administrador', 'auxiliar', 'recepcionista'),
   idValidation,
   handleValidationErrors,
   inventarioController.update
