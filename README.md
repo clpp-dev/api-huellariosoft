@@ -86,7 +86,7 @@ Backend completo para sistema de gestión veterinaria desarrollado con Node.js, 
 
 #### 1. Clonar el repositorio
 ```bash
-git clone <url-del-repositorio>
+git clone https://github.com/clpp-dev/api-huellariosoft.git
 cd api-huellariosoft
 ```
 
@@ -217,7 +217,7 @@ api-huellariosoft/
 └── README.md
 ```
 
-## � Despliegue en Producción
+## Despliegue en Producción
 
 ### Render.com (Plataforma Actual)
 
