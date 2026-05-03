@@ -1,18 +1,22 @@
 # 🐾 HuellarioSoft API
 
+**Versión:** 1.0.0
+
 Backend completo para sistema de gestión veterinaria desarrollado con Node.js, Express y MongoDB.
 
-## 📋 Características
+## 📋 Características Principales
 
-- ✅ Autenticación JWT con refresh tokens
-- ✅ Control de acceso basado en roles (RBAC)
-- ✅ Arquitectura en capas escalable
+- 🔐 Autenticación JWT con refresh tokens
+- 👥 Control de acceso basado en roles (RBAC)
+- 🏗️ Arquitectura en capas escalable
 - ✅ Validación de datos con Express Validator
-- ✅ Manejo global de errores
-- ✅ Carga de archivos con Multer
-- ✅ Paginación en listados
-- ✅ Búsquedas avanzadas
-- ✅ API RESTful bien estructurada
+- ⚠️ Manejo global de errores
+- 📁 Carga de archivos con Multer
+- 📄 Paginación en listados
+- 🔍 Búsquedas avanzadas
+- 🌐 API RESTful bien estructurada
+- 📊 Generación de reportes y PDFs
+- 📧 Envío de correos electrónicos
 
 ## 🚀 Módulos del Sistema
 
@@ -70,56 +74,95 @@ Backend completo para sistema de gestión veterinaria desarrollado con Node.js, 
 - **Morgan** - Logs HTTP
 - **Cors** - Cross-Origin Resource Sharing
 
-## 📦 Instalación
+## 📦 Instalación y Configuración
 
-### Requisitos previos
-- Node.js >= 18.0.0
-- MongoDB >= 6.0
-- npm o yarn
+### Requisitos Previos
+- **Node.js** >= 18.0.0
+- **MongoDB** >= 6.0 (local o MongoDB Atlas)
+- **npm** >= 9.0.0
+- **Git** para control de versiones
 
-### Pasos de instalación
+### Instalación Local
 
-1. **Clonar el repositorio**
+#### 1. Clonar el repositorio
 ```bash
 git clone <url-del-repositorio>
 cd api-huellariosoft
 ```
 
-2. **Instalar dependencias**
+#### 2. Instalar dependencias
 ```bash
 npm install
 ```
 
-3. **Configurar variables de entorno**
-```bash
-cp .env.example .env
-```
+#### 3. Configurar variables de entorno
 
-Editar el archivo `.env` con tus configuraciones:
+Crear un archivo `.env` en la raíz del proyecto:
+
 ```env
-NODE_ENV=
-PORT=
-MONGODB_URI=
-JWT_SECRET=
-JWT_EXPIRES_IN=
-REFRESH_TOKEN_SECRET=
-REFRESH_TOKEN_EXPIRES_IN=
+# Servidor
+NODE_ENV=development
+PORT=5000
+
+# Base de datos
+MONGODB_URI=mongodb://localhost:27017/huellariosoft
+
+# JWT
+JWT_SECRET=tu_clave_secreta_muy_segura_aqui
+JWT_EXPIRES_IN=1h
+REFRESH_TOKEN_SECRET=tu_refresh_token_secret_muy_seguro
+REFRESH_TOKEN_EXPIRES_IN=7d
+
+# Bcrypt
+BCRYPT_SALT_ROUNDS=10
+
+# CORS
+ALLOWED_ORIGINS=http://localhost:5173,http://localhost:3000
+
+# Email (Opcional)
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_SECURE=false
+MAIL_USER=tu_email@gmail.com
+MAIL_PASSWORD=tu_password_de_aplicacion
+
+# Uploads
+UPLOAD_DIR=uploads
+MAX_FILE_SIZE=5242880
 ```
 
-4. **Iniciar MongoDB**
+> ⚠️ **Importante**: Nunca subir el archivo `.env` al repositorio.
+
+#### 4. Verificar MongoDB
+
+Asegurarse de que MongoDB está corriendo:
+
 ```bash
-# Si usas MongoDB local
-mongod
+# Windows
+net start MongoDB
 
-# O usa MongoDB Atlas (cloud)
+# Linux/Mac
+sudo systemctl start mongod
 ```
 
-5. **Crear usuario administrador inicial**
+O usar **MongoDB Atlas** (recomendado para producción).
+
+#### 5. Crear usuario administrador inicial
+
+**IMPORTANTE**: Antes de iniciar el servidor, crear el usuario administrador:
+
 ```bash
 node createAdmin.js
 ```
 
-6. **Iniciar el servidor**
+**Credenciales por defecto:**
+- **Email**: `admin@huellariosoft.com`
+- **Password**: `123456Usuario`
+- **Rol**: `administrador`
+
+> 🔐 **Seguridad**: Cambiar la contraseña después del primer login.
+
+#### 6. Iniciar el servidor
 
 **Modo desarrollo (con auto-reload):**
 ```bash
@@ -131,7 +174,22 @@ npm run dev
 npm start
 ```
 
-El servidor estará disponible en: `http://localhost:3000`
+El servidor estará disponible en: `http://localhost:5000`
+
+#### 7. Verificar instalación
+
+```bash
+curl http://localhost:5000/health
+```
+
+Respuesta esperada:
+```json
+{
+  "status": "OK",
+  "message": "HuellarioSoft API funcionando correctamente",
+  "timestamp": "2026-05-03T10:30:00.000Z"
+}
+```
 
 ## 🏗️ Estructura del Proyecto
 
@@ -159,12 +217,52 @@ api-huellariosoft/
 └── README.md
 ```
 
+## � Despliegue en Producción
+
+### Render.com (Plataforma Actual)
+
+El proyecto está desplegado en Render.com. Para desplegar:
+
+1. **Iniciar sesión en [Render.com](https://render.com)**
+
+2. **Vincular repositorio de GitHub**
+   - Click en "New +" → "Web Service"
+   - Conectar con GitHub
+   - Seleccionar el repositorio del backend
+
+3. **Configurar el servicio**
+   - **Environment**: Node
+   - **Build Command**: `npm install`
+   - **Start Command**: `npm start`
+
+4. **Agregar variables de entorno**
+   - Configurar todas las variables necesarias (ver sección de variables de entorno)
+   - Usar MongoDB Atlas para la base de datos
+
+5. **Deploy**
+   - Render automáticamente hará el build y deploy
+   - Los cambios en la rama principal se despliegan automáticamente
+
+6. **Crear usuario administrador**
+   - Ir a la Shell del servicio en Render
+   - Ejecutar: `node createAdmin.js`
+
+**Características de Render:**
+- ✅ SSL/HTTPS automático y gratuito
+- ✅ Deploy automático con cada push
+- ✅ Logs y métricas en tiempo real
+- ⚠️ Plan Free: suspensión después de 15 min de inactividad
+
+Para más detalles, consultar el [Manual Técnico](./docs/Manual_técnico.md#13-despliegue).
+
 ## 🔐 Roles y Permisos
 
-- **Administrador**: Acceso completo al sistema
-- **Veterinario**: Gestión de historias clínicas y citas
-- **Recepcionista**: Gestión de citas, propietarios, mascotas y facturas
-- **Auxiliar**: Gestión de inventario
+| Rol | Permisos |
+|-----|----------|
+| **Administrador** | Acceso completo al sistema |
+| **Veterinario** | Gestión de citas, historia clínica, ver propietarios y mascotas |
+| **Recepcionista** | Gestión de citas, propietarios, mascotas, facturas (sin acceso a usuarios) |
+| **Auxiliar** | Gestión de citas y facturas (operaciones del día a día) |
 
 ## 📚 Endpoints Principales
 
@@ -238,16 +336,18 @@ PATCH  /api/facturas/:id/pagar      # Marcar como pagada
 PATCH  /api/facturas/:id/anular     # Anular factura
 ```
 
-## 🧪 Pruebas
+## 🧪 Pruebas y Testing
 
 Puedes probar los endpoints usando:
-- **Postman** - Importa la colección
+- **Postman** - Cliente API completo
 - **Thunder Client** - Extensión de VS Code
+- **Insomnia** - Cliente API alternativo
 - **cURL** - Línea de comandos
 
-### Ejemplo de login:
+### Ejemplo de Login
+
 ```bash
-curl -X POST http://localhost:3000/api/auth/login \
+curl -X POST http://localhost:5000/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{
     "email": "admin@huellariosoft.com",
@@ -255,40 +355,122 @@ curl -X POST http://localhost:3000/api/auth/login \
   }'
 ```
 
+**Respuesta:**
+```json
+{
+  "success": true,
+  "data": {
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "user": {
+      "id": "...",
+      "nombre": "Administrador",
+      "email": "admin@huellariosoft.com",
+      "rol": "administrador"
+    }
+  }
+}
+```
+
+### Ejemplo de Petición Autenticada
+
+```bash
+curl http://localhost:5000/api/users \
+  -H "Authorization: Bearer <tu-access-token>" \
+  -H "Content-Type: application/json"
+```
+
 ## 🔒 Seguridad
 
-- Contraseñas hasheadas con bcrypt
-- JWT para autenticación stateless
-- Validación de entrada en todas las rutas
-- Control de acceso basado en roles
-- Protección contra inyección NoSQL
-- Headers de seguridad con CORS
+- 🔐 **Contraseñas**: Hasheadas con bcrypt (10 salt rounds)
+- 🎫 **Autenticación**: JWT con access y refresh tokens
+- ✅ **Validación**: Express Validator en todas las rutas
+- 👥 **Autorización**: Control de acceso basado en roles (RBAC)
+- 🛡️ **Protección**: Contra inyección NoSQL y XSS
+- 🌐 **CORS**: Configurado para orígenes permitidos
+- 🔑 **Variables sensibles**: Almacenadas en variables de entorno
 
 ## 📝 Variables de Entorno
 
+### Variables Requeridas
+
 | Variable | Descripción | Ejemplo |
 |----------|-------------|---------|
-| `NODE_ENV` | Entorno de ejecución | `development` o `production` |
-| `PORT` | Puerto del servidor | `3000` |
+| `NODE_ENV` | Entorno de ejecución | `development`, `production` |
+| `PORT` | Puerto del servidor | `5000` |
 | `MONGODB_URI` | URI de conexión MongoDB | `mongodb://localhost:27017/huellariosoft` |
-| `JWT_SECRET` | Clave secreta JWT | `tu_clave_secreta` |
-| `JWT_EXPIRES_IN` | Expiración del token | `15m` |
-| `REFRESH_TOKEN_SECRET` | Clave refresh token | `tu_clave_refresh` |
-| `REFRESH_TOKEN_EXPIRES_IN` | Expiración refresh token | `7d` |
+| `JWT_SECRET` | Clave secreta JWT | Cadena aleatoria segura |
+| `JWT_EXPIRES_IN` | Expiración del access token | `1h` |
+| `REFRESH_TOKEN_SECRET` | Clave para refresh tokens | Cadena aleatoria segura |
+| `REFRESH_TOKEN_EXPIRES_IN` | Expiración del refresh token | `7d` |
+| `BCRYPT_SALT_ROUNDS` | Rounds para bcrypt | `10` |
+| `ALLOWED_ORIGINS` | Orígenes permitidos CORS | `http://localhost:5173` |
 
-## 📖 Documentación Adicional
+### Variables Opcionales (Email y Uploads)
 
+| Variable | Descripción | Valor por Defecto |
+|----------|-------------|-------------------|
+| `MAIL_HOST` | Servidor SMTP | `smtp.gmail.com` |
+| `MAIL_PORT` | Puerto SMTP | `587` |
+| `MAIL_SECURE` | Usar TLS | `false` |
+| `MAIL_USER` | Usuario de email | - |
+| `MAIL_PASSWORD` | Contraseña de email | - |
+| `UPLOAD_DIR` | Directorio de uploads | `uploads` |
+| `MAX_FILE_SIZE` | Tamaño máximo archivo (bytes) | `5242880` (5MB) |
+
+## 📖 Documentación Completa
+
+- **[Manual Técnico](./docs/Manual_técnico.md)** - Documentación técnica detallada
 - [Casos de Uso](./.github/Casos_de_uso.md)
 - [Historias de Usuario](./.github/Historias_de_usuario.md)
 - [Requisitos Funcionales](./.github/Requisitos_funcionales.md)
 - [Requisitos No Funcionales](./.github/Requisitos_no_funcionales.md)
 
+## 🛠️ Scripts Disponibles
+
+```bash
+# Desarrollo con auto-reload
+npm run dev
+
+# Producción
+npm start
+
+# Crear usuario administrador
+node createAdmin.js
+```
+
+## 🐛 Troubleshooting
+
+### MongoDB no conecta
+```bash
+# Verificar que MongoDB está corriendo
+# Windows
+net start MongoDB
+
+# Linux/Mac
+sudo systemctl status mongod
+```
+
+### Error: Puerto en uso
+```bash
+# Cambiar el puerto en .env o detener el proceso
+# Windows
+netstat -ano | findstr :5000
+taskkill /PID <numero-de-pid> /F
+
+# Linux/Mac
+lsof -ti:5000 | xargs kill -9
+```
+
+### Token expirado
+Usar el endpoint `/api/auth/refresh` con el refresh token para obtener un nuevo access token.
+
 ## 🤝 Contribuir
 
 1. Fork el proyecto
-2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
+2. Crea una rama para tu feature (`git checkout -b feature/NuevaCaracteristica`)
+3. Commit tus cambios (`git commit -m 'Agregar nueva característica'`)
+4. Push a la rama (`git push origin feature/NuevaCaracteristica`)
 5. Abre un Pull Request
 
 ## 📄 Licencia
@@ -297,4 +479,9 @@ Este proyecto es de uso privado para HuellarioSoft.
 
 ## 👥 Autor
 
-**HuellarioSoft Team**
+**HuellarioSoft Team**  
+📧 Contacto: admin@huellariosoft.com
+
+---
+
+**Última actualización:** Mayo 2026
