@@ -81,9 +81,6 @@ class UserService {
    * Actualizar usuario
    */
   async update(id, updateData) {
-    // No permitir actualizar password directamente aquí
-    delete updateData.password;
-
     // Verificar si el email ya existe (si se está actualizando)
     if (updateData.email) {
       const existingUser = await User.findOne({
@@ -96,16 +93,31 @@ class UserService {
       }
     }
 
-    const user = await User.findByIdAndUpdate(id, updateData, {
-      new: true,
-      runValidators: true,
-    }).select('-password');
+    // Si no se envía password, eliminarlo del updateData
+    if (!updateData.password || updateData.password === '') {
+      delete updateData.password;
+      delete updateData.confirmPassword;
+    } else {
+      // Si se envía password, eliminar confirmPassword (solo es para validación frontend)
+      delete updateData.confirmPassword;
+    }
+
+    // Usar findById + save en lugar de findByIdAndUpdate
+    // para que se ejecute el hook pre-save que hashea el password
+    const user = await User.findById(id);
 
     if (!user) {
       throw new NotFoundError('Usuario no encontrado');
     }
 
-    return user;
+    // Actualizar campos
+    Object.assign(user, updateData);
+
+    // Guardar (esto ejecuta el hook pre-save)
+    await user.save();
+
+    // Retornar sin password
+    return user.toJSON();
   }
 
   /**
