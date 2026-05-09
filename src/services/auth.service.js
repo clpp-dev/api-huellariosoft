@@ -249,7 +249,6 @@ class AuthService {
     // Intentar enviar el email y esperar el resultado
     try {
       await emailService.sendPasswordResetEmail(email, resetToken, userName);
-      console.log(`✅ Email de recuperación enviado exitosamente a: ${email}`);
       
       return {
         success: true,
@@ -323,7 +322,6 @@ class AuthService {
     // Intentar enviar email de confirmación (no crítico si falla)
     try {
       await emailService.sendPasswordChangedEmail(userEmail, userName);
-      console.log(`✅ Email de confirmación enviado a: ${userEmail}`);
     } catch (error) {
       // Loguear el error pero no fallar - la contraseña ya fue cambiada exitosamente
       console.error(`❌ Error al enviar email de confirmación a ${userEmail}:`, error.message);
@@ -371,7 +369,6 @@ class AuthService {
     try {
       const userName = tipoUsuario === 'propietario' ? user.nombreCompleto : user.nombre;
       await emailService.sendPasswordChangedEmail(user.email, userName);
-      console.log(`✅ Email de confirmación de cambio de contraseña enviado a: ${user.email}`);
     } catch (error) {
       console.error(`❌ Error al enviar email de confirmación a ${user.email}:`, error.message);
     }

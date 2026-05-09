@@ -98,6 +98,16 @@ class UserController {
   });
 
   /**
+   * Obtener veterinarios (incluye veterinarios + administradores habilitados)
+   * GET /api/users/veterinarios
+   */
+  getVeterinarios = asyncHandler(async (req, res) => {
+    const users = await userService.getVeterinarios();
+
+    successResponse(res, users, 'Veterinarios obtenidos exitosamente', 200);
+  });
+
+  /**
    * Toggle status del usuario (activar/desactivar)
    * PATCH /api/users/:id/toggle-status
    */

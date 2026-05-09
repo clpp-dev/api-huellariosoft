@@ -178,9 +178,18 @@ class CitaService {
       throw new ValidationError('El propietario especificado no existe');
     }
 
-    // Verificar que el veterinario existe y es veterinario
+    // Verificar que el veterinario existe y es válido
     const veterinario = await User.findById(citaData.veterinario);
-    if (!veterinario || veterinario.rol !== 'veterinario') {
+    if (!veterinario) {
+      throw new ValidationError('El veterinario especificado no existe');
+    }
+
+    // Validar que sea veterinario o administrador habilitado como veterinario
+    const esVeterinarioValido = 
+      veterinario.rol === 'veterinario' || 
+      (veterinario.rol === 'administrador' && veterinario.actuarComoVeterinario === true);
+    
+    if (!esVeterinarioValido) {
       throw new ValidationError('El veterinario especificado no es válido');
     }
 

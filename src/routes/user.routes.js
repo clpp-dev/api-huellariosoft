@@ -21,6 +21,13 @@ router.use(authenticate);
 router.get('/', authorize('administrador'), userController.getAll);
 
 /**
+ * @route   GET /api/users/veterinarios
+ * @desc    Obtener veterinarios (incluye veterinarios + administradores habilitados)
+ * @access  Private (Todos los roles autenticados)
+ */
+router.get('/veterinarios', userController.getVeterinarios);
+
+/**
  * @route   GET /api/users/role/:rol
  * @desc    Obtener usuarios por rol
  * @access  Private (Administrador, Recepcionista, Auxiliar, Veterinario, Propietario)

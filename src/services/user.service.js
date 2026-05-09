@@ -178,6 +178,21 @@ class UserService {
     const users = await User.find({ rol, activo: true }).select('-password');
     return users;
   }
+
+  /**
+   * Obtener veterinarios (incluye veterinarios + administradores habilitados como veterinarios)
+   */
+  async getVeterinarios() {
+    const users = await User.find({
+      activo: true,
+      $or: [
+        { rol: 'veterinario' },
+        { rol: 'administrador', actuarComoVeterinario: true }
+      ]
+    }).select('-password').sort({ nombre: 1 });
+    return users;
+  }
 }
+
 
 export default new UserService();

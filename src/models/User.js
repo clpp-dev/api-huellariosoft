@@ -41,6 +41,12 @@ const userSchema = new Schema(
       type: Boolean,
       default: true,
     },
+    actuarComoVeterinario: {
+      type: Boolean,
+      default: false,
+      // Solo aplicable para usuarios con rol 'administrador'
+      // Permite que el admin aparezca en listados de veterinarios
+    },
     resetPasswordToken: {
       type: String,
       select: false, // No incluir en queries por defecto

@@ -170,8 +170,13 @@ class HistoriaClinicaService {
       throw new ValidationError('El veterinario especificado no existe');
     }
     
-    if (!['veterinario', 'administrador'].includes(veterinario.rol)) {
-      throw new ValidationError('El usuario especificado debe ser veterinario o administrador');
+    // Validar que sea veterinario o administrador habilitado como veterinario
+    const esVeterinarioValido = 
+      veterinario.rol === 'veterinario' || 
+      (veterinario.rol === 'administrador' && veterinario.actuarComoVeterinario === true);
+    
+    if (!esVeterinarioValido) {
+      throw new ValidationError('El usuario especificado debe ser veterinario o administrador habilitado como veterinario');
     }
 
     // Si hay una cita asociada, marcarla como completada
