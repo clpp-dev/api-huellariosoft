@@ -49,12 +49,12 @@ const historiaClinicaSchema = new Schema(
       },
       deshidratacion: {
         type: Number,
-        min: 1,
+        min: 0,
         max: 5,
       },
       condicionCorporal: {
         type: Number,
-        min: 1,
+        min: 0,
         max: 5,
       },
       actitudPropietario: {
