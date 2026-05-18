@@ -29,11 +29,102 @@ const historiaClinicaSchema = new Schema(
       trim: true,
       maxlength: [300, 'El motivo no puede exceder 300 caracteres'],
     },
+    // Anamnésicos
+    anamnesicos: {
+      type: String,
+      trim: true,
+      maxlength: [2000, 'Los anamnésicos no pueden exceder 2000 caracteres'],
+    },
     sintomas: {
       type: String,
       trim: true,
       maxlength: [1000, 'Los síntomas no pueden exceder 1000 caracteres'],
     },
+    // Examen Físico
+    examenFisico: {
+      muscosas: {
+        type: String,
+        enum: ['Pálidas', 'Rosadas', 'Congestionadas', 'Cianóticas', 'Ictéricas', 'Otro'],
+        trim: true,
+      },
+      deshidratacion: {
+        type: Number,
+        min: 1,
+        max: 5,
+      },
+      condicionCorporal: {
+        type: Number,
+        min: 1,
+        max: 5,
+      },
+      actitudPropietario: {
+        type: String,
+        enum: ['Amigable', 'Nervioso', 'Agresivo', 'Temeroso', 'Colaborador', 'Otro'],
+        trim: true,
+      },
+      actitudVeterinario: {
+        type: String,
+        enum: ['Amigable', 'Nervioso', 'Agresivo', 'Temeroso', 'Colaborador', 'Otro'],
+        trim: true,
+      },
+    },
+    // Sistemas Afectados
+    sistemasAfectados: {
+      descripcion: {
+        type: String,
+        trim: true,
+        maxlength: [2000, 'La descripción no puede exceder 2000 caracteres'],
+      },
+      pulso: {
+        type: String,
+        trim: true,
+        maxlength: [100, 'El pulso no puede exceder 100 caracteres'],
+      },
+      tllc: {
+        type: String,
+        trim: true,
+        maxlength: [100, 'El TLLC no puede exceder 100 caracteres'],
+      },
+      trpc: {
+        type: String,
+        trim: true,
+        maxlength: [100, 'El TRPC no puede exceder 100 caracteres'],
+      },
+      examenesComplementarios: {
+        type: String,
+        trim: true,
+        maxlength: [2000, 'Los exámenes complementarios no pueden exceder 2000 caracteres'],
+      },
+      listaProblemas: {
+        type: String,
+        trim: true,
+        maxlength: [2000, 'La lista de problemas no puede exceder 2000 caracteres'],
+      },
+      listaMaestra: {
+        type: String,
+        trim: true,
+        maxlength: [2000, 'La lista maestra no puede exceder 2000 caracteres'],
+      },
+    },
+    // Evaluación Clínica
+    evaluacionClinica: {
+      pronostico: {
+        type: String,
+        trim: true,
+        maxlength: [1000, 'El pronóstico no puede exceder 1000 caracteres'],
+      },
+      diagnostico: {
+        type: String,
+        trim: true,
+        maxlength: [2000, 'El diagnóstico no puede exceder 2000 caracteres'],
+      },
+      tratamiento: {
+        type: String,
+        trim: true,
+        maxlength: [2000, 'El tratamiento no puede exceder 2000 caracteres'],
+      },
+    },
+    // Campos legacy (mantener para retrocompatibilidad)
     diagnostico: {
       type: String,
       trim: true,
